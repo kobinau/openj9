@@ -124,7 +124,7 @@ class TR_RuntimeAssumptionTable
     * removed from the table - this is used to rate limit clean-up activity
     * and amortize the cost over time.
     */
-   void reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount = -1);
+   void reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount = -1,bool runRedef);//kobiMod
 
    int32_t countRatAssumptions();
 

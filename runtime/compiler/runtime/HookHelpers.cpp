@@ -119,10 +119,10 @@ namespace  {
       pointer_cast<TR_PersistentMemory *>( jitConfig->scratchSegment )->getPersistentInfo()->getRuntimeAssumptionTable()->markAssumptionsAndDetach(metaData, reclaimPrePrologueAssumptions);
       }
 
-   inline void reclaimMarkedAssumptionsFromRAT(int cleanUpCount)
+   inline void reclaimMarkedAssumptionsFromRAT(int cleanUpCount,bool runRedef)
       {
       // expunge any runtime assumptions in the RAT that have previously been marked
-      pointer_cast<TR_PersistentMemory *>( jitConfig->scratchSegment )->getPersistentInfo()->getRuntimeAssumptionTable()->reclaimMarkedAssumptionsFromRAT(cleanUpCount);
+      pointer_cast<TR_PersistentMemory *>( jitConfig->scratchSegment )->getPersistentInfo()->getRuntimeAssumptionTable()->reclaimMarkedAssumptionsFromRAT(cleanUpCount,bool runRedef);
       }
    
    // We need to update the nextMethod and prevMethod pointers of the J9JITExceptionTable that
@@ -416,13 +416,16 @@ void jitRemoveAllMetaDataForClassLoader(J9VMThread * vmThread, J9ClassLoader * c
 void jitReclaimMarkedAssumptions(bool isEager)
    {
    static char *forceAggressiveRATCleaning = feGetEnv("TR_forceAggressiveRATCleaning");
+   bool runRedef;
    if (isEager || forceAggressiveRATCleaning)
       {
-      reclaimMarkedAssumptionsFromRAT(-1);
+      runRedef=false;
+      reclaimMarkedAssumptionsFromRAT(-1,runRedef);
       }
    else
       {
-      reclaimMarkedAssumptionsFromRAT(100);
+      runRedef=true;
+      reclaimMarkedAssumptionsFromRAT(100,runRedef);
       }
    }
 

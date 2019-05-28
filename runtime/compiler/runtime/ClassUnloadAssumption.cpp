@@ -365,14 +365,21 @@ void TR_RuntimeAssumptionTable::markForDetachFromRAT(OMR::RuntimeAssumption *ass
  * will be traversed, and only the hashtable linked-lists that have a non-zero 
  * marked for detach count will be traversed.
  */
-void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount)
+void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount,bool runRedef)
    {
    if (_marked == 0)
       return;
-
+   //kobiMod
+   
    assumptionTableMutex->enter();
    for (int kind=0; _marked > 0 && cleanupCount != 0 && kind < LastAssumptionKind; kind++) // for each table
       {
+      if(runRedef==true)
+	if(kind==RuntimeAssumptionOnClassRedefinitionPIC||kind==RuntimeAssumptionOnClassRedefinitionUPIC||kind==RuntimeAssumptionOnClassRedefinitionNOP)
+	  continue;
+      else if(runRedef==false)
+        if(kind!=RuntimeAssumptionOnClassRedefinitionPIC&&kind!=RuntimeAssumptionOnClassRedefinitionUPIC&&kind!=RuntimeAssumptionOnClassRedefinitionNOP)
+	  continue;
       if (_detachPending[kind] == true)  // Is there anything to remove from this table?
          {
          TR_RatHT *hashTable = _tables + kind;
