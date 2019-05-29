@@ -370,7 +370,7 @@ void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupC
    if (_marked == 0)
       return;
 
-   bool is_runtime_assumption=RuntimeAssumptionOnClassRedefinitionPIC||RuntimeAssumptionOnClassRedefinitionUPIC||RuntimeAssumptionOnClassRedefinitionNOP;
+   bool is_runtime_assumption=kind==RuntimeAssumptionOnClassRedefinitionPIC||kind==RuntimeAssumptionOnClassRedefinitionUPIC||kind==RuntimeAssumptionOnClassRedefinitionNOP;
   
    
    assumptionTableMutex->enter();
