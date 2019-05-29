@@ -369,16 +369,16 @@ void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupC
    {
    if (_marked == 0)
       return;
-   //kobiMod
+
+   bool is_runtime_assumption=RuntimeAssumptionOnClassRedefinitionPIC||RuntimeAssumptionOnClassRedefinitionUPIC||RuntimeAssumptionOnClassRedefinitionNOP;
+  
    
    assumptionTableMutex->enter();
    for (int kind=0; _marked > 0 && cleanupCount != 0 && kind < LastAssumptionKind; kind++) // for each table
       {
-      if(runRedef==true)
-	if(kind==RuntimeAssumptionOnClassRedefinitionPIC||kind==RuntimeAssumptionOnClassRedefinitionUPIC||kind==RuntimeAssumptionOnClassRedefinitionNOP)
+      if(runRedef==true&&!is_runtime_assumption)
 	  continue;
-      else if(runRedef==false)
-        if(kind!=RuntimeAssumptionOnClassRedefinitionPIC&&kind!=RuntimeAssumptionOnClassRedefinitionUPIC&&kind!=RuntimeAssumptionOnClassRedefinitionNOP)
+      else if(runRedef==false&&is_runtime_assumption)
 	  continue;
       if (_detachPending[kind] == true)  // Is there anything to remove from this table?
          {
