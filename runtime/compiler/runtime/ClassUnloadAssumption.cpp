@@ -376,11 +376,11 @@ void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupC
    assumptionTableMutex->enter();
    for (int kind=0; _marked > 0 && cleanupCount != 0 && kind < LastAssumptionKind; kind++) // for each table
       {
-      if(runRedef==true&&!is_runtime_assumption)
-	  continue;
-      else if(runRedef==false&&is_runtime_assumption)
-	  continue;
-      if (_detachPending[kind] == true)  // Is there anything to remove from this table?
+     // if(runRedef==true&&!is_runtime_assumption)
+//	  continue;
+  //    else if(runRedef==false&&is_runtime_assumption)
+//	  continue;
+        if (_detachPending[kind] == true)  // Is there anything to remove from this table?
          {
          TR_RatHT *hashTable = _tables + kind;
          bool fullyCleaned = true;
