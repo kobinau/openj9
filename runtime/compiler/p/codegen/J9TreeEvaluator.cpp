@@ -921,6 +921,18 @@ static void VMwrtbarEvaluator(TR::Node *node, TR::Register *srcReg, TR::Register
    cg->stopUsingRegister(temp2Reg);
    }
 
+void
+J9::Power::TreeEvaluator::generateTestAndReportFieldWatchInstructions(TR::CodeGenerator *cg, TR::Node *node, TR::Snippet *dataSnippet, bool isWrite, TR::Register *sideEffectRegister, TR::Register *valueReg)
+   {
+   TR_ASSERT_FATAL(false, "This helper implements platform specific code for Fieldwatch, which is currently not supported on Power platforms.\n");
+   }
+
+void
+J9::Power::TreeEvaluator::generateFillInDataBlockSequenceForUnresolvedField(TR::CodeGenerator *cg, TR::Node *node, TR::Snippet *dataSnippet, bool isWrite, TR::Register *sideEffectRegister)
+   {
+   TR_ASSERT_FATAL(false, "This helper implements platform specific code for Fieldwatch, which is currently not supported on Power platforms.\n");
+   }
+
 TR::Register *J9::Power::TreeEvaluator::awrtbarEvaluator(TR::Node *node, TR::CodeGenerator *cg)
    {
    TR::Compilation * comp = cg->comp();
@@ -1214,6 +1226,11 @@ TR::Register *J9::Power::TreeEvaluator::awrtbariEvaluator(TR::Node *node, TR::Co
 
 TR::Register *J9::Power::TreeEvaluator::irdbarEvaluator(TR::Node *node, TR::CodeGenerator *cg)
    {
+   return TR::TreeEvaluator::irdbariEvaluator(node, cg);
+   }
+
+TR::Register *J9::Power::TreeEvaluator::irdbariEvaluator(TR::Node *node, TR::CodeGenerator *cg)
+   {
    TR_ASSERT(TR::Compiler->om.readBarrierType() != gc_modron_readbar_none, "iReadBarrierEvaluator");
 #ifdef OMR_GC_CONCURRENT_SCAVENGER
    TR_ASSERT(cg->comp()->useCompressedPointers(), "irdbarEvaluator is expecting compressed references");
@@ -1338,6 +1355,11 @@ TR::Register *J9::Power::TreeEvaluator::irdbarEvaluator(TR::Node *node, TR::Code
    }
 
 TR::Register *J9::Power::TreeEvaluator::ardbarEvaluator(TR::Node *node, TR::CodeGenerator *cg)
+   {
+   return TR::TreeEvaluator::ardbariEvaluator(node, cg);
+   }
+
+TR::Register *J9::Power::TreeEvaluator::ardbariEvaluator(TR::Node *node, TR::CodeGenerator *cg)
    {
    TR_ASSERT(TR::Compiler->om.readBarrierType() != gc_modron_readbar_none, "aReadBarrierEvaluator");
 #ifdef OMR_GC_CONCURRENT_SCAVENGER
@@ -2475,7 +2497,7 @@ TR::Register *J9::Power::TreeEvaluator::BNDCHKwithSpineCHKEvaluator(TR::Node *no
    // Evaluate any escaping nodes before the OOL branch since they won't be evaluated in the OOL path.
    preEvaluateEscapingNodesForSpineCheck(node, cg);
 
-   // Label to the OOL code that will perform the load/store/agen for discontigous arrays (and the bound check if needed).
+   // Label to the OOL code that will perform the load/store/agen for discontiguous arrays (and the bound check if needed).
    TR::LabelSymbol *discontiguousArrayLabel = generateLabelSymbol(cg);
 
    // Label back to main-line that the OOL code will branch to when done.
@@ -4731,7 +4753,7 @@ TR::Register * J9::Power::TreeEvaluator::VMgenCoreInstanceofEvaluator(TR::Node *
       crReg = conditions->searchPreConditionRegister(TR::RealRegister::cr0);
       if (!crReg)
          {
-         // This is another hack to compensate for skipping the preservating of CCRs for helper calls in linkage code.
+         // This is another hack to compensate for skipping the preserving of CCRs for helper calls in linkage code.
          // This hack wouldn't be necessary if this code wasn't being lazy and re-using the dependencies
          // set up by the direct call evaluator, but alas...
          // Since we are not preserving CCRs and this code previously expected to find a CCR in the call instruction's
@@ -6043,7 +6065,7 @@ static void genHeapAlloc(TR::Node *node, TR::Instruction *&iCursor, TR_OpaqueCla
 
                //TODO: The code below pads up the object allocation size so that zero init code later
                //will have multiples of wordsize to work with. For now leaving this code as is, but
-               //check if its worthwhile to remove these extra instuctions added here for padding as
+               //check if its worthwhile to remove these extra instructions added here for padding as
                //zero init will be removed now.
                if (elementSize >= 2)
                   {
@@ -6170,7 +6192,7 @@ static void genHeapAlloc(TR::Node *node, TR::Instruction *&iCursor, TR_OpaqueCla
          //TODO: this code is never executed, check if we can remove this now.
          if (!cg->isDualTLH())
             {
-            //shouldAlignToCacheBoundary is false at defintion at the top, and
+            //shouldAlignToCacheBoundary is false at definition at the top, and
             //the only codepoint where its set to true is never executed
             //so this looks like a candidate for deletion.
             if (shouldAlignToCacheBoundary)
@@ -8394,7 +8416,7 @@ TR::Register *J9::Power::TreeEvaluator::VMarrayCheckEvaluator(TR::Node *node, TR
       if (!node->isArrayChkReferenceArray1())
          {
 
-         // Loading the Class Pointer -> classDepthandFlags
+         // Loading the Class Pointer -> classDepthAndFlags
 #ifdef OMR_GC_COMPRESSED_POINTERS
          generateTrg1MemInstruction(cg, TR::InstOpCode::lwz, node, tmp1Reg,
                new (cg->trHeapMemory()) TR::MemoryReference(obj1Reg, (int32_t) TR::Compiler->om.offsetOfObjectVftField(), 4, cg));

@@ -550,8 +550,8 @@ ROMClassBuilder::prepareAndLaydown( BufferManager *bufferManager, ClassFileParse
 					&& ((U_8 *)existingROMClass == context->intermediateClassData())
 				) {
 					/* 'existingROMClass' is same as the ROMClass corresponding to intermediate class data.
-					 * Based on the assumption that an agent is actually modifing the class file
-					 * instead of just returning a copy of the classbytes it recieves,
+					 * Based on the assumption that an agent is actually modifying the class file
+					 * instead of just returning a copy of the classbytes it receives,
 					 * this comparison can be avoided.
 					 */
 					continue;
@@ -1077,7 +1077,7 @@ ROMClassBuilder::finishPrepareAndLaydown(
  *                      + AccClassInnerClass
  *                     + UNUSED
  *
- *                   + UNUSED
+ *                   + AccClassNeedsStaticConstantInit
  *                  + AccClassIntermediateDataIsClassfile
  *                 + AccClassUnsafe
  *                + AccClassAnnnotionRefersDoubleSlotEntry
@@ -1203,6 +1203,10 @@ ROMClassBuilder::computeExtraModifiers(ClassFileOracle *classFileOracle, ROMClas
 
 	if (classFileOracle->isInnerClass()) {
 		modifiers |= J9AccClassInnerClass;
+	}
+
+	if (classFileOracle->needsStaticConstantInit()) {
+		modifiers |= J9AccClassNeedsStaticConstantInit;
 	}
 
 	return modifiers;

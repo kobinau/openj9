@@ -769,7 +769,7 @@ j9bcv_createVerifyErrorString(J9PortLibrary * portLib, J9BytecodeVerificationDat
 		if (J9_ARE_ALL_BITS_SET(error->verificationFlags, J9_VERIFY_ERROR_DETAILS)
 		&& (0 != error->errorDetailCode)
 		) {
-			/* Jazz 82615: The value of detailedErrMsg may change if the inital byteArray is insufficient to contain the error message framework.
+			/* Jazz 82615: The value of detailedErrMsg may change if the initial byteArray is insufficient to contain the error message framework.
 			 * Under such circumstances, it points to the address of newly allocated memory.
 			 */
 			detailedErrMsg = byteArray;
@@ -1037,7 +1037,7 @@ static void getNameAndLengthFromClassNameList (J9BytecodeVerificationData *verif
 }
 
 /* return BCV_SUCCESS if field is found
- * retrun BCV_NOT_FOUND if field is not found
+ * return BCV_NOT_FOUND if field is not found
  * return BCV_FAIL otherwise
  */
 
@@ -1069,7 +1069,7 @@ static IDATA findFieldFromRamClass (J9Class ** ramClass, J9ROMFieldRef * field, 
 }
 
 /* return BCV_SUCCESS if method is found
- * retrun BCV_NOT_FOUND if method is not found
+ * return BCV_NOT_FOUND if method is not found
  * return BCV_FAIL otherwise
  */
 static IDATA 

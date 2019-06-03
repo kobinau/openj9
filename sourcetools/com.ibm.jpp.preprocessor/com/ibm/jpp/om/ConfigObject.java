@@ -393,7 +393,7 @@ public class ConfigObject {
 	}
 
 	/**
-	 * Returns thsi ConfigObject's immediate configuration dependencies.
+	 * Returns this ConfigObject's immediate configuration dependencies.
 	 *
 	 * @return      the configuration dependencies
 	 */
@@ -881,7 +881,7 @@ public class ConfigObject {
 	}
 
 	/**
-	 * Returns the numbe of sources defined for this ConfigObject.
+	 * Returns the number of sources defined for this ConfigObject.
 	 *
 	 * @return      the number of defined sources
 	 */

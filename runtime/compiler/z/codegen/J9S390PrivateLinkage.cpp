@@ -824,7 +824,6 @@ TR::S390PrivateLinkage::mapStack(TR::ResolvedMethodSymbol * method)
 void
 TR::S390PrivateLinkage::mapSingleAutomatic(TR::AutomaticSymbol * p, uint32_t & stackIndex)
    {
-   // *this    swipeable for debugging purposeso
 
    mapSingleAutomatic(p, p->getRoundedSize(), stackIndex);
    }
@@ -1886,7 +1885,7 @@ TR::S390PrivateLinkage::buildVirtualDispatch(TR::Node * callNode, TR::RegisterDe
           * 2. for all virtual calls, resolved or not, this load immediate is used by the VM to find where
           * the method is in the VFT table when doing J2I transitions. We need this negative offset in a register
           * because S390 load address instruction used to find VFT table entires can't handle negative offsets.
-          * (VFT table preceeds the J9Class in memory; as a result of this, all VFT entries are some negative offsets
+          * (VFT table precedes the J9Class in memory; as a result of this, all VFT entries are some negative offsets
           * away from the J9Class)
           *
           *
@@ -2121,7 +2120,7 @@ TR::S390PrivateLinkage::buildVirtualDispatch(TR::Node * callNode, TR::RegisterDe
                                    TR::Compiler->om.generateCompressedObjectHeaders() // Classes are <2GB on CompressedRefs only.
                                    );
 
-            // Load the interface call data snippet pointer to register is requied for non-CLFI / BRCL sequence.
+            // Load the interface call data snippet pointer to register is required for non-CLFI / BRCL sequence.
             if (!useCLFIandBRCL)
                {
                cursor = new (trHeapMemory()) TR::S390RILInstruction(TR::InstOpCode::LARL, callNode, snippetReg, ifcSnippet->getDataConstantSnippet(), cg());
@@ -2605,7 +2604,7 @@ void TR::J9S390JNILinkage::acquireVMAccessMask(TR::Node * callNode, TR::Register
    //  As java stack is not yet restored , Make sure that no instruction in this function
    // should use stack.
    // If instruction uses literal pool, it must only be to do load, and such instruction's memory reference should be marked MemRefMustNotSpill
-   // so that in case of long disp, we will resue the target reg as a scratch reg
+   // so that in case of long disp, we will reuse the target reg as a scratch reg
 
    TR_J9VMBase *fej9 = (TR_J9VMBase *)(self()->fe());
    intptrj_t aValue = fej9->constAcquireVMAccessOutOfLineMask();
@@ -3152,7 +3151,7 @@ TR::S390PrivateLinkage::storeExtraEnvRegForBuildArgs(TR::Node * callNode, TR::Li
         TR::Register *stackRegister = linkage->getStackRegisterForOutgoingArguments(callNode, dependencies);  // delay (possibly) creating this till needed
         storeArgumentOnStack(callNode, TR::InstOpCode::getStoreOpCode(), jniEnvRegister, &stackOffset, stackRegister);
         }
-     if (linkage->isXPLinkLinkageType()) // call specifc
+     if (linkage->isXPLinkLinkageType()) // call specific
         {
         stackOffset += gprSize;
         }
@@ -3171,7 +3170,7 @@ TR::S390PrivateLinkage::addFECustomizedReturnRegDependency(int64_t killMask, TR:
    TR::Register * javaResultReg;
 
    //In zOS XPLink, return register(GPR3) is not same as privateLinkage (GPR2)
-   // hense we need to add another dependency
+   // hence we need to add another dependency
    if (linkage->getIntegerReturnRegister() != getIntegerReturnRegister())
       {
       javaResultReg =  (resType.isAddress())? cg()->allocateCollectedReferenceRegister() : cg()->allocateRegister();
@@ -3356,7 +3355,7 @@ TR::S390PrivateLinkage::buildIndirectDispatch(TR::Node * callNode)
 ////////////////////////////////////////////////////////////////////////////////
 // TR::S390PrivateLinkage::mapIncomingParms - maps parameters onto the stack for the given method.
 //   This function iterates over the parameters, mapping them onto the stack, either right
-//   to left, or left to right, depending on S390Linakge properties.
+//   to left, or left to right, depending on S390Linkage properties.
 //   This code was removed from TR::S390PrivateLinkage::mapStack as it is common code that
 //   is now called by TR::S390PrivateLinkage::mapCompactedStack as well.
 ////////////////////////////////////////////////////////////////////////////////

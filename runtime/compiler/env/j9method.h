@@ -343,7 +343,7 @@ public:
    virtual void *                stringConstant(int32_t cpIndex);
    virtual bool                  isUnresolvedString(int32_t cpIndex, bool optimizeForAOT = false);
    /** \brief
-    *     Retrieves the underlying type infomation for a given constant dynamic.
+    *     Retrieves the underlying type information for a given constant dynamic.
     *
     *  \param cpIndex
     *     The constant pool index of the constant dynamic.
@@ -379,7 +379,7 @@ public:
     *     The constant pool index of the constant dynamic.
     *
     *  \return
-    *     Opauqe pointer to the slot containing the resolved constant dynamic value.
+    *     Opaque pointer to the slot containing the resolved constant dynamic value.
     */
    virtual void *                dynamicConstant(int32_t cpIndex);
    virtual void *                methodTypeConstant(int32_t cpIndex);
@@ -466,6 +466,14 @@ public:
 
    char *fieldOrStaticNameChars      (int32_t cpIndex, int32_t & len);
    char *fieldOrStaticSignatureChars (int32_t cpIndex, int32_t & len);
+
+   /**
+    * @brief Create TR::ParameterSymbols from the signature of a method, and add them
+    *        to the ParameterList on the ResolvedMethodSymbol.
+    *
+    * @param[in] methodSym : the ResolvedMethodSymbol to create the parameter list for
+    */
+   virtual void makeParameterList(TR::ResolvedMethodSymbol *methodSym);
 
 protected:
    virtual TR_J9MethodBase *asJ9Method(){ return this; }

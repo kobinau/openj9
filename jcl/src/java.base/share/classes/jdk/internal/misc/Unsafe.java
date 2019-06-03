@@ -952,7 +952,7 @@ public final class Unsafe {
 	 * Returns byte offset to start of static class or interface.
 	 * 
 	 * @param field which contains desired class or interface
-	 * @return offset to start of class or iterface
+	 * @return offset to start of class or interface
 	 * 
 	 * @throws NullPointerException if field parameter is null
 	 * @throws IllegalArgumentException if field is not static
@@ -1478,7 +1478,7 @@ public final class Unsafe {
 	 * Returns byte offset to start of static class or interface.
 	 * 
 	 * @param field which contains desired class or interface
-	 * @return offset to start of class or iterface
+	 * @return offset to start of class or interface
 	 * 
 	 * @throws NullPointerException if field parameter is null
 	 * @throws IllegalArgumentException if field is not static
@@ -5840,7 +5840,7 @@ public final class Unsafe {
 	 * otherwise an IllegalArgumentException is thrown
 	 * 
 	 * @param bbo a ByteBuffer object
-	 * @throws IllegalArgumentException as per decription above
+	 * @throws IllegalArgumentException as per description above
 	 */
 	public void invokeCleaner(ByteBuffer bbo) {
 		if (bbo instanceof DirectBuffer) {

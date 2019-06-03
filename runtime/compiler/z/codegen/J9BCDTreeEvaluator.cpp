@@ -520,7 +520,7 @@ J9::Z::TreeEvaluator::pd2udEvaluatorHelper(TR::Node *node, TR::CodeGenerator *cg
 TR::Register *
 J9::Z::TreeEvaluator::pd2udVectorEvaluatorHelper(TR::Node *node, TR::CodeGenerator *cg)
    {
-   // 1. Evalute child node and get a packed decimal in vector register
+   // 1. Evaluate child node and get a packed decimal in vector register
    TR::Node* childNode = node->getFirstChild();
    TR::Register* pdValueReg = cg->evaluate(childNode);
 
@@ -575,8 +575,8 @@ J9::Z::TreeEvaluator::pd2udEvaluator(TR::Node *node, TR::CodeGenerator *cg)
  * \param node              Parent node object.
  * \param targetReg         PseudoRegister object for the parent node (the node)
  * \param sourceMR          MemoryRefernece object pointer
- * \param childReg          PesudoRegister object for the child node (e.g. pdloadi node)
- * \param isSeparaeteSign   True if the opteration is pd2udsl or pd2udst, which all have separate sign code. Flase
+ * \param childReg          PseudoRegister object for the child node (e.g. pdloadi node)
+ * \param isSeparateSign    True if the operation is pd2udsl or pd2udst, which all have separate sign code. False
  *                          if it's pd2ud.
  * \param cg                The codegen object
  * \param srcStorageReference If not null, this replaces the childReg's StorageReference for unpack to unicode
@@ -1598,7 +1598,7 @@ J9::Z::TreeEvaluator::zd2pdEvaluator(TR::Node * node, TR::CodeGenerator * cg)
    }
 
 /**
- * 1. Get zd value by evaluting child node. It's in zdNode's PseudoRegister
+ * 1. Get zd value by evaluating child node. It's in zdNode's PseudoRegister
  * 2. Get the memory reference from the pseudo register.
  * 3. Allocate Vector register to return
  * 4. get size of the node( node->getsize)
@@ -1900,7 +1900,7 @@ J9::Z::TreeEvaluator::pd2zdVectorEvaluatorHelper(TR::Node * node, TR::CodeGenera
    // 2. creatememoryreference from the StorageREference,
    // 3. Use the memory reference to create VUPKZ instruction
    //
-   // return the allocate PseudoRegister associate the storage refence to the Pseudo register
+   // return the allocate PseudoRegister associate the storage reference to the Pseudo register
    // return this pseudoregister/
    //
    TR_StorageReference *hint = node->getStorageReferenceHint();
@@ -1909,7 +1909,7 @@ J9::Z::TreeEvaluator::pd2zdVectorEvaluatorHelper(TR::Node * node, TR::CodeGenera
    TR_StorageReference* targetStorageReference = hint ? hint : TR_StorageReference::createTemporaryBasedStorageReference(sizeOfZonedValue, comp);
 
    targetReg->setStorageReference(targetStorageReference, node);
-   TR::Node *child = node->getFirstChild(); //This child will evalueate to Vector Register
+   TR::Node *child = node->getFirstChild(); //This child will evaluate to Vector Register
    TR::Register *valueRegister = cg->evaluate(child);
    TR_ASSERT((valueRegister->getKind() == TR_VRF || valueRegister->getKind() == TR_FPR),
              "valueChild should evaluate to Vector register.");
@@ -2197,7 +2197,7 @@ J9::Z::TreeEvaluator::df2zdEvaluator(TR::Node *node, TR::CodeGenerator *cg)
 
    targetReg->setStorageReference(targetStorageReference, node);
 
-   bool enforceSSLimits = true;  // RSL has same limits as SS (no index and 12 bit displacment)
+   bool enforceSSLimits = true;  // RSL has same limits as SS (no index and 12 bit displacement)
    TR::MemoryReference *destMR = generateS390LeftAlignedMemoryReference(node, targetStorageReference, cg, memSize, enforceSSLimits);
 
    if (cg->traceBCDCodeGen())
@@ -2278,7 +2278,7 @@ J9::Z::TreeEvaluator::zd2ddEvaluator(TR::Node *node, TR::CodeGenerator *cg)
    TR_StorageReference *srcStorageReference = srcReg->getStorageReference();
    int32_t srcRegSize = srcReg->getSize();
 
-   bool enforceSSLimits = true;  // RSL has same limits as SS (no index and 12 bit displacment)
+   bool enforceSSLimits = true;  // RSL has same limits as SS (no index and 12 bit displacement)
    TR::MemoryReference *sourceMR = generateS390LeftAlignedMemoryReference(srcNode, srcStorageReference, cg, srcRegSize, enforceSSLimits);
 
    TR::Register *fprTargetReg = isLongDouble ? cg->allocateFPRegisterPair() : cg->allocateRegister(TR_FPR);
@@ -2342,7 +2342,7 @@ J9::Z::TreeEvaluator::isZonedOperationAnEffectiveNop(TR::Node * node, int32_t sh
    }
 
 /**
- * \brief This evaluator helper function evalutes BCDCHK nodes by emitting mainline and out-of-line instructions for
+ * \brief This evaluator helper function evaluates BCDCHK nodes by emitting mainline and out-of-line instructions for
  * the underlying packed decimal operations. The mainline instructions perform the actual operations, and the OOL
  * instructions are for hardware exception handling.
  *
@@ -2387,7 +2387,7 @@ J9::Z::TreeEvaluator::isZonedOperationAnEffectiveNop(TR::Node * node, int32_t sh
  *
  * \param node                  the BCDCHK node
  * \param cg                    codegen object
- * \param numCallChildre        number of callNode children
+ * \param numCallParam          number of callNode children
  * \param callChildStartIndex   the index of the first callChild under the BCDCHK node
  * \param isResultPD            True if the result of the pdOpNode a PD; false if the result is a binary integer/long
  *                              This also implies that the second node of the BCDCHK node is an address node.
@@ -2953,7 +2953,7 @@ J9::Z::TreeEvaluator::pd2ddEvaluator(TR::Node *node, TR::CodeGenerator *cg)
       {
       uint8_t mask = isAbs ? TR_PACKED_TO_DFP_ABS : TR_PACKED_TO_DFP_NOABS;
 
-      bool enforceSSLimits = true;  // RSL has same limits as SS (no index and 12 bit displacment)
+      bool enforceSSLimits = true;  // RSL has same limits as SS (no index and 12 bit displacement)
       TR::MemoryReference *sourceMR = generateS390LeftAlignedMemoryReference(srcNode, srcStorageReference, cg, srcRegSize, enforceSSLimits);
 
       fprTargetReg = isLongDouble ? cg->allocateFPRegisterPair() : cg->allocateRegister(TR_FPR);
@@ -3165,7 +3165,7 @@ J9::Z::TreeEvaluator::df2pdEvaluator(TR::Node *node, TR::CodeGenerator *cg)
       }
 
    int32_t maxBytesFromConv = 0;    // how many digits CSDTR/CSXTR can at most produce
-   int32_t maxDigitsInSrc = 0;   // how many signif digits are possible from source dfp
+   int32_t maxDigitsInSrc = 0;   // how many significant digits are possible from source dfp
    if (isFloat)
       {
       maxBytesFromConv = cg->getDecimalFloatToPackedFixedSize();  // CSDTR produces 15 digits == 8 bytes; CPDT produces 16 digits == 9 bytes
@@ -3393,7 +3393,7 @@ J9::Z::TreeEvaluator::df2pdEvaluator(TR::Node *node, TR::CodeGenerator *cg)
 
       targetReg->setStorageReference(targetStorageReference, node);
 
-      bool enforceSSLimits = true;  // RSL has same limits as SS (no index and 12 bit displacment)
+      bool enforceSSLimits = true;  // RSL has same limits as SS (no index and 12 bit displacement)
       TR::MemoryReference *destMR = generateS390LeftAlignedMemoryReference(node, targetStorageReference, cg, memSize, enforceSSLimits);
 
       if (cg->traceBCDCodeGen())
@@ -4353,7 +4353,7 @@ J9::Z::TreeEvaluator::evaluateValueModifyingOperand(TR::Node * node,
       // Save the storage reference dependent state leftAlignedZeroDigits, rightAlignedDeadBytes and the derived liveSymbolSize before
       // the possible call to ssrClobberEvaluate below.
       // If a clobber evaluate is done then the above mentioned state will be reset on firstReg (so subsequent commoned uses of firstReg that now
-      // use the newly created temporary storage reference are correct). Cache the values here as this state *will* presist up this tree on the targetReg.
+      // use the newly created temporary storage reference are correct). Cache the values here as this state *will* persist up this tree on the targetReg.
       int32_t savedLiveSymbolSize = firstReg->getLiveSymbolSize();
       int32_t savedLeftAlignedZeroDigits = firstReg->getLeftAlignedZeroDigits();
       int32_t savedRightAlignedDeadBytes = firstReg->getRightAlignedDeadBytes();
@@ -4469,7 +4469,7 @@ J9::Z::TreeEvaluator::evaluateValueModifyingOperand(TR::Node * node,
             //
             // The temporary hint is the size of z but if performExplicitWidening is also set to true below then code will be generated to initialize up
             // to the size of z even though this extra initialized space will be unused for the rest of the operation.
-            // Nodes (x,y,z) that share the same hint are tracked and removed when the node is evaluated. At the current node's (y) initializion point
+            // Nodes (x,y,z) that share the same hint are tracked and removed when the node is evaluated. At the current node's (y) initialization point
             // only x,y will be in this list and only up to size=10 will be initialized.
             destLength = targetStorageReference->getMaxSharedNodeSize();
             }
@@ -4742,7 +4742,7 @@ J9::Z::TreeEvaluator::pdloadVectorEvaluatorHelper(TR::Node *node, TR::CodeGenera
    TR::Register* vTargetReg = vTargetReg = cg->allocateRegister(TR_VRF);
    TR::Node* addressNode = node->getFirstChild();
 
-   // No need to evalute the address node of the pdloadi.
+   // No need to evaluate the address node of the pdloadi.
    // generateVSIInstruction() API will call separateIndexRegister() to separate the index
    // register by emitting an LA instruction. If there's a need for large displacement adjustment,
    // LAY will be emitted instead.
@@ -5195,7 +5195,7 @@ TR::Register* J9::Z::TreeEvaluator::pdstoreEvaluatorHelper(TR::Node *node, TR::C
    bool isLeadingSignByteWidening = isByteWidening && node->getType().isLeadingSign();
 
    useZAP =  useZAP && bcdValueReg && (!bcdValueReg->hasKnownOrAssumedCleanSign() || mustUseZAP);
-   //useZAP = useZAP || (isPacked && isByteTruncation); // truncating packed stores that need oveflow exception should be using pdshlOverflow
+   //useZAP = useZAP || (isPacked && isByteTruncation); // truncating packed stores that need overflow exception should be using pdshlOverflow
 
    bool preserveSrcSign = bcdValueReg && !bcdValueReg->isLegalToCleanSign();
 
@@ -5773,7 +5773,7 @@ J9::Z::TreeEvaluator::pdstoreVectorEvaluatorHelper(TR::Node *node, TR::CodeGener
    TR::Compilation *comp = cg->comp();
    TR::Node * valueChild = node->getValueChild();
    TR::Node* addressNode = node->getChild(0);
-   // evalute valueChild (which is assumed by the OMR layer to be the second child) to Vector register.
+   // evaluate valueChild (which is assumed by the OMR layer to be the second child) to Vector register.
    // for this "pdStore" we assume if we evaluate value node we get Vector Register
    TR::Register* pdValueReg = cg->evaluate(valueChild);
 
@@ -5785,7 +5785,7 @@ J9::Z::TreeEvaluator::pdstoreVectorEvaluatorHelper(TR::Node *node, TR::CodeGener
       traceMsg(comp,"generating VSTRL for pdstore node->size = %d.\n", node->getSize());
       }
 
-   // No need to evalute the address node of the pdstorei.
+   // No need to evaluate the address node of the pdstorei.
    // generateVSIInstruction() API will call separateIndexRegister() to separate the index
    // register by emitting an LA instruction. If there's a need for large displacement adjustment,
    // LAY will be emitted instead.
@@ -6443,7 +6443,7 @@ int32_t getAddSubComputedResultPrecision(TR::Node *node, TR::CodeGenerator * cg)
  * -- pdmul
  * -- pddiv
  *
- * whose corresponding BCD vector instructrions are of VRI-f format.
+ * whose corresponding BCD vector instructions are of VRI-f format.
  */
 TR::Register *
 J9::Z::TreeEvaluator::pdArithmeticVectorEvaluatorHelper(TR::Node * node, TR::InstOpCode::Mnemonic op, TR::CodeGenerator * cg)
@@ -6687,7 +6687,7 @@ J9::Z::TreeEvaluator::pdmulEvaluatorHelper(TR::Node * node, TR::CodeGenerator * 
          node,targetReg->getDecimalPrecision(),computedResultPrecision,firstReg->getDecimalPrecision(),secondReg->getDecimalPrecision());
       }
 
-   // Even with no overflow MP can produce a negative zero as the sign of the result is determinted from the rules
+   // Even with no overflow MP can produce a negative zero as the sign of the result is determined from the rules
    // of algebra *even when one or both of the operands are zero*. So 0 * -1 = -0 (0x0c * 0x1d = 0x0d -- not clean result)
    // MP will always produce a result with a preferred sign however.
    if (firstReg->hasKnownOrAssumedPositiveSignCode() &&
@@ -7116,7 +7116,7 @@ J9::Z::TreeEvaluator::simpleWideningOrTruncation(TR::Node *node,
 
 /*
  * \brief
- * Generate non-exception throwing intructions for pdModifyPrecision node to narrow or widen packed decimals.
+ * Generate non-exception throwing instructions for pdModifyPrecision node to narrow or widen packed decimals.
  * The generated instruction sequence does not validate the source packed decimals. Any invalid packed
  * decimals will be loaded as is and modified as if their digits and signs were valid.
 */
@@ -7267,7 +7267,7 @@ J9::Z::TreeEvaluator::pdshiftEvaluatorHelper(TR::Node *node, TR::CodeGenerator *
       {
       if (srcPrecision > resultPrecision)
          {
-         /* Packed decimal narrrowing with exception handling:
+         /* Packed decimal narrowing with exception handling:
           *
           * If the narrowing operation truncates non-zero digits (e.g. shift "123C" by 0 digts and keep 2 digits yields "23C")
           * and the 'checkOverflow' parameter is true, the JIT'ed sequence should trigger HW exception and

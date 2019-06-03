@@ -269,7 +269,7 @@ MM_VerboseFileLoggingOutput::formatAndOutput(J9VMThread *vmThread, UDATA indent,
 }
 
 /**
- * Generate an expaneded filename based on currentFile.
+ * Generate an expanded filename based on currentFile.
  * The caller is responsible for freeing the returned memory.
  * 
  * @param env the current thread
@@ -339,7 +339,7 @@ MM_VerboseFileLoggingOutput::findInitialFile(MM_EnvironmentBase *env)
 
 /**
  * Opens the file to log output to and prints the header.
- * @return true on sucess, false otherwise
+ * @return true on success, false otherwise
  */
 bool
 MM_VerboseFileLoggingOutput::openFile(MM_EnvironmentBase *env)

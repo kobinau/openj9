@@ -167,15 +167,13 @@ public class IPC {
 		}
 	}
 
-	/*[PR Jazz 30075] setupSemaphore was re-doing what createDirectoryAndSemaphore (now called prepareCommonDirectory) did already */
-
 	/**
-	 * 
+	 * Open a semaphore.  On Windows, use the global namespace if requested.
 	 * @param ctrlDir Location of the control file
 	 * @param SemaphoreName key used to identify the semaphore
 	 * @return non-zero on failure
 	 */
-	native static int openSemaphore(String ctrlDir, String SemaphoreName);
+	native static int openSemaphore(String ctrlDir, String SemaphoreName, boolean global);
 
 	/**
 	 * wait for a post on the semaphore for this VM. Use notify() to do the post
@@ -185,19 +183,25 @@ public class IPC {
 
 	/**
 	 * Open the semaphore, post to it, and close it
+	 * @param ctrlDir directory containing the semaphore
+	 * @param semaphoreName name of the semaphore
 	 * @param numberOfTargets number of times to post to the semaphore
+	 * @param global open the semaphore in the global namespace (Windows only)
 	 * @return 0 on success
 	 */
-	native static int notifyVm(String ctrlDir, String SemaphoreName,
-			int numberOfTargets);
+	native static int notifyVm(String ctrlDir, String semaphoreName,
+			int numberOfTargets, boolean global);
 
 	/**
 	 * Open the semaphore, decrement it without blocking to it, and close it
-	 * @param numberOfTargets number of times to decrement to the semaphore
+	 * @param ctrlDir directory containing the semaphore
+	 * @param semaphoreName name of the semaphore
+	 * @param numberOfTargets number of times to post to the semaphore
+	 * @param global open the semaphore in the global namespace (Windows only)
 	 * @return 0 on success
 	 */
-	static native int cancelNotify(String ctrlDir, String SemaphoreName,
-			int numberOfTargets);
+	static native int cancelNotify(String ctrlDir, String semaphoreName,
+			int numberOfTargets, boolean global);
 
 	/**
 	 * close but do not destroy this VM's notification semaphore.
@@ -418,14 +422,16 @@ public class IPC {
 	 * Print the information about a throwable, including the exact class,
 	 * message, and stack trace.
 	 * @param msg User supplied message
-	 * @param thrown throwable
+	 * @param thrown Throwable object or null
 	 * @note nothing is printed if logging is disabled
 	 */
 	public static void logMessage(String msg, Throwable thrown) {
 		synchronized (accessorMutex) {
 			if (isLoggingEnabled()) {
 				printMessageWithHeader(msg, logStream);
-				thrown.printStackTrace(logStream);
+				if (null != thrown) {
+					thrown.printStackTrace(logStream);
+				}
 				logStream.flush();
 			}
 		}

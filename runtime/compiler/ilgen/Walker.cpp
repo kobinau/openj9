@@ -2279,7 +2279,7 @@ TR_J9ByteCodeIlGenerator::stopCountingStackRefs()
 //
 // if there is no PPS (Pending Pop Stack) for the target bytecode
 // (Which must be the first in the target bb) we create one which is
-// subsequenly initialized with the current PPS.  This is just a
+// subsequently initialized with the current PPS.  This is just a
 // lazy initialization.
 //
 // When a bb is translated _stackTemps initially is a copy of the
@@ -2443,7 +2443,7 @@ TR_J9ByteCodeIlGenerator::saveStack(int32_t targetIndex, bool anchorLoads)
 // Bad code results if code following saveStack generated stores
 // attempts to load from one of the saved PPS slots. Two obvious
 // examples arise. For the first example see the comment before
-// TR_J9ByteCodeIlGenerator::genIfImp. Second, consider a treetop preceeding a
+// TR_J9ByteCodeIlGenerator::genIfImp. Second, consider a treetop preceding a
 // decompilation point. Nodes loaded from the PPS save region (i.e that
 // were live on entry to the block) may be referred to by treetops on
 // both sides of the decompilation point and thus may be killed by the
@@ -2459,14 +2459,14 @@ TR_J9ByteCodeIlGenerator::saveStack(int32_t targetIndex, bool anchorLoads)
 // Meanwhile, TR IL is being generated that refers to Nodes popped off
 // the stack. The assumption here is that the order of operations is
 // unconstrained other than by the data flow implied by the trees of
-// references to nodes and by the control dependancies imposed by the
+// references to nodes and by the control dependencies imposed by the
 // order of treetops. The latter are implied by the semantics of each
 // bytecode.
 //
 // The job of handlePendingPushSaveSideEffects is to add additional
-// implicit control dependancies to the TR IL caused by the
+// implicit control dependencies to the TR IL caused by the
 // decompilation points.  All loads of the PPS save region must occur
-// before decompilation points except in the specfic case when the load
+// before decompilation points except in the specific case when the load
 // would redundantly reload a value already in the PPS.
 //
 // If handlePendingPushSaveSideEffects is being called on the stack
@@ -3572,7 +3572,7 @@ TR_J9ByteCodeIlGenerator::genIfTwoOperand(TR::ILOpCodes nodeop)
 // handlePendingPushSaveSideEffects is called to promote any such loads
 // to treetops preceding the saveStack generated stores.
 //
-// This API does not generate asynccheck, it's the caller's responsiblity
+// This API does not generate asynccheck, it's the caller's responsibility
 // to ensure one is generated for a backward branch.
 //
 int32_t
@@ -5057,7 +5057,7 @@ break
       TR::ILOpCodes callOpCode = calledMethod->indirectCallOpCode();
       if (invokedynamicReceiver)
          {
-         // invokedyanmic is an oddball.  It's the only way to invoke a method
+         // invokedynamic is an oddball.  It's the only way to invoke a method
          // such that the receiver is NOT on the operand stack, yet it IS
          // included in the numArgs calculation.  That's why we pass
          // numChildren as numArgs+1 below.
@@ -6410,9 +6410,9 @@ TR_J9ByteCodeIlGenerator::loadFromCP(TR::DataType type, int32_t cpIndex)
             int32_t valueOffset = 0;
 
             // If condy is primitive type and resolved, load the primitive constant;
-            // Otherwise, load using a CP symol (for resolved and unresolved object type),
+            // Otherwise, load using a CP symbol (for resolved and unresolved object type),
             // and generate subsequent loadi for the unresolved primitive 'value' field if needed (because
-            // for unresolved primitive the resovle helper only returns an autobox'd object).
+            // for unresolved primitive the resolve helper only returns an autobox'd object).
             if (isCondyPrimitive)
                {
                char *autoboxClassSig = NULL;
@@ -7404,7 +7404,7 @@ TR_J9ByteCodeIlGenerator::storeStatic(int32_t cpIndex)
          performClassLookahead(_classInfo);
 
       // findFieldInfo will update node, if node is array shadow, as it set canBeArrayShadow=true
-      // For normal static findFieldInfo will not update node, it can't be arrayShadown store
+      // For normal static findFieldInfo will not update node, it can't be arrayShadow store
       // So set canBeArrayShadow false here
       //
       TR_PersistentFieldInfo * fieldInfo = _classInfo->getFieldInfo() ? _classInfo->getFieldInfo()->findFieldInfo(comp(), node, false) : NULL;

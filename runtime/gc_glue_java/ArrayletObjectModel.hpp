@@ -127,7 +127,7 @@ public:
 	}
 
 	/**
-	 * Get the number of discontinous arraylets for the given indexable object
+	 * Get the number of discontiguous arraylets for the given indexable object
 	 * @param objPtr Pointer to an array object
 	 * @return the number of arraylets stored external to the spine.
 	 */
@@ -245,7 +245,7 @@ public:
 	/**
 	 * We can't use memcpy because it may be not atomic for pointers, use this function instead
 	 * Copy data in UDATA words
-	 * If lenght is not times of UDATA one more word is copied
+	 * If length is not times of UDATA one more word is copied
 	 * @param destAddr address copy to
 	 * @param sourceAddr address copy from
 	 * @param lengthInBytes requested size in bytes

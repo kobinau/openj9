@@ -1600,7 +1600,7 @@ static bool indirectDispatchWillBuildVirtualGuard(TR::Compilation *comp, TR::X86
    TR_J9VMBase *fej9 = (TR_J9VMBase *)(comp->fe());
 
    // This method is used in vft mask instruction removal in buildIndirectDispatch
-   // if method will generate virutal call guard and build direct call, then skip vft mask instruction.
+   // if method will generate virtual call guard and build direct call, then skip vft mask instruction.
    if (site->getVirtualGuardKind() != TR_NoGuard && fej9->canDevirtualizeDispatch() )
       {
       if (comp->performVirtualGuardNOPing())
@@ -1667,7 +1667,7 @@ TR::Register *TR::X86PrivateLinkage::buildIndirectDispatch(TR::Node *callNode)
          */
          TR::MemoryReference  *sourceMR = generateX86MemoryReference(vftChild, cg());
          TR::Register *reg = cg()->allocateRegister();
-         // as vftChild->getOpCode().isLoadIndirect is true here, need set excpetionpoint
+         // as vftChild->getOpCode().isLoadIndirect is true here, need set exception point
          TR::Instruction * instr = TR::TreeEvaluator::insertLoadMemory(vftChild, reg, sourceMR, TR_RematerializableAddress, cg());
          reg->setMemRef(sourceMR);
          cg()->setImplicitExceptionPoint(instr);

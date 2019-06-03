@@ -1312,7 +1312,7 @@ TR_ResolvedJ9MethodBase::_genMethodILForPeeking(TR::ResolvedMethodSymbol *method
 
    c->setPeekingSymRefTab(newSymRefTab);
 
-   // Do this so that all intermedate calls to c->getSymRefTab()
+   // Do this so that all intermediate calls to c->getSymRefTab()
    // in codegen.dev go to the new symRefTab
    //
    c->setCurrentSymRefTab(newSymRefTab);
@@ -1322,7 +1322,7 @@ TR_ResolvedJ9MethodBase::_genMethodILForPeeking(TR::ResolvedMethodSymbol *method
    TR_ByteCodeInfo bci;
 
    //incInlineDepth is a part of a hack to make InvariantArgumentPreexistence
-   //play nicely if getCurrentInlinedCallArgInfo is provided while peeeking.
+   //play nicely if getCurrentInlinedCallArgInfo is provided while peeking.
    //If we don't provide either dummy (default is set to NULL) or real argInfo we will end up
    //using the wrong argInfo coming from a CALLER rather than the peeking method.
    c->getInlinedCallArgInfoStack().push(argInfo);
@@ -6499,7 +6499,7 @@ TR_ResolvedJ9Method::getResolvedStaticMethod(TR::Compilation * comp, I_32 cpInde
       // ILGen macros currently must be resolved for correctness, or else they
       // are not recognized and expanded.  If we have unresolved calls, we can't
       // tell whether they're ilgen macros because the recognized-method system
-      // only works on resovled methods.
+      // only works on resolved methods.
       //
       if (ramMethod)
          skipForDebugging = false;
@@ -7062,6 +7062,104 @@ TR_ResolvedJ9Method::fieldIsFromLocalClass(int32_t cpIndex)
       return true;
    else
       return false;
+   }
+
+
+void
+TR_ResolvedJ9Method::makeParameterList(TR::ResolvedMethodSymbol *methodSym)
+   {
+   if (methodSym->getTempIndex() != -1)
+      return;
+
+   const char *className    = classNameChars();
+   const int   classNameLen = classNameLength();
+   const char *sig          = signatureChars();
+   const int   sigLen       = signatureLength();
+   const char *sigEnd       = sig + sigLen;
+
+   ListAppender<TR::ParameterSymbol> la(&methodSym->getParameterList());
+   TR::ParameterSymbol *parmSymbol;
+   int32_t slot;
+   int32_t ordinal = 0;
+   if (methodSym->isStatic())
+      {
+      slot = 0;
+      }
+   else
+      {
+      parmSymbol = methodSym->comp()->getSymRefTab()->createParameterSymbol(methodSym, 0, TR::Address);
+      parmSymbol->setOrdinal(ordinal++);
+
+      int32_t len = classNameLen; // len is passed by reference and changes during the call
+      char * s = classNameToSignature(className, len, methodSym->comp(), heapAlloc);
+
+      la.add(parmSymbol);
+      parmSymbol->setTypeSignature(s, len);
+
+      slot = 1;
+      }
+
+   const char *s = sig;
+   TR_ASSERT(*s == '(', "Bad signature for method: <%s>", s);
+   ++s;
+
+   uint32_t parmSlots = numberOfParameterSlots();
+   for (int32_t parmIndex = 0; slot < parmSlots; ++parmIndex)
+      {
+      TR::DataType type = parmType(parmIndex);
+      int32_t size = methodSym->convertTypeToSize(type);
+      if (size < 4) type = TR::Int32;
+
+      const char *end = s;
+
+      // Walk past array dims, if any
+      while (*end == '[')
+         {
+         ++end;
+         }
+
+      // Walk to the end of the class name, if this is a class name
+      if (*end == 'L')
+         {
+         // Assume the form is L<classname>; where <classname> is
+         // at least 1 char and therefore skip the first 2 chars
+         end += 2;
+         end = (char *)memchr(end, ';', sigEnd - end);
+         TR_ASSERT(end != NULL, "Unexpected NULL, expecting to find a parm of the form L<classname>;");
+         }
+
+      // The static_cast<int>(...) is added as a work around for an XLC bug that results in the
+      // pointer subtraction below getting converted into a 32-bit signed integer subtraction
+      int len = static_cast<int>(end - s) + 1;
+
+      parmSymbol = methodSym->comp()->getSymRefTab()->createParameterSymbol(methodSym, slot, type);
+      parmSymbol->setOrdinal(ordinal++);
+      parmSymbol->setTypeSignature(s, len);
+
+      s += len;
+
+      la.add(parmSymbol);
+      if (type == TR::Int64 || type == TR::Double)
+         {
+         slot += 2;
+         }
+      else
+         {
+         ++slot;
+         }
+      }
+
+   int32_t lastInterpreterSlot = parmSlots + numberOfTemps();
+
+   if ((methodSym->isSynchronised() || methodSym->getResolvedMethod()->isNonEmptyObjectConstructor()) &&
+       methodSym->comp()->getOption(TR_MimicInterpreterFrameShape))
+      {
+      ++lastInterpreterSlot;
+      }
+
+   methodSym->setTempIndex(lastInterpreterSlot, methodSym->comp()->fe());
+
+   methodSym->setFirstJitTempIndex(methodSym->getTempIndex());
    }
 
 

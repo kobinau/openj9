@@ -267,7 +267,7 @@ ZZ   _interpreterUnresolvedSpecialGlue
 ZZ
 ZZ Description(s):
 ZZ
-ZZ   int _interperterUnresolvedSpecialGlue
+ZZ   int _interpreterUnresolvedSpecialGlue
 ZZ   =============================
 ZZ   Invoke jitResolveSpecialMethod to resolve a method and
 ZZ   update the snippet code
@@ -694,7 +694,7 @@ LABEL(Ljitted)
 
 ifdef([MCC_SUPPORTED],[dnl
 ZZ Call MCC service for code patching of the resolved method.
-ZZ Paramters:
+ZZ Parameters:
 ZZ       j9method, callSite, newPC, extraArg
 ZZ  We have to load the arguments onto the stack to pass to
 ZZ  jitCallCFunction:
@@ -1439,7 +1439,7 @@ ZZ  # derive base pointer into table
     BRAS    breg,LDataResolve_common_code_instructions
 
 ZZ  First constant is a BRC 3 (jump by 6 bytes)
-ZZ  This is used to patch the orginal branch to
+ZZ  This is used to patch the original branch to
 ZZ  Snippet instruction, if the original branch
 ZZ  was not a BRCL (BRCL has its displacement patched
 ZZ  manually).  See comment for Unresolved*Data*Glue
@@ -1573,14 +1573,14 @@ ZZ  If resolved offset is greater than 4k
     JH     LDataOOL
 
     L_GPR   r3,eq_codeRef_inDataSnippet(,r14) #DataRef instr location
-ZZ  needsToBeSignExtenedTo8Bytes
+ZZ  needsToBeSignExtendedTo8Bytes
 ifdef([TR_HOST_64BIT],[dnl
     CLI     0(r3),HEX(59)  #check if this is OC_C
     JNZ     LclearD2
     AHI     r2,4 # integer is in the lower half of the 8 byte slot
 ])dnl
 LABEL(LclearD2)
-    L       r1,0(,r3)                # Data Ref. Instructon
+    L       r1,0(,r3)                # Data Ref. Instruction
     N       r1,4(,breg)              # Zero out the displacement field
     AR      r1,r2                    # Update the displacement field
     ST      r1,0(,r3)                # Store the result
@@ -1733,7 +1733,7 @@ ZZ zLinux
 ])dnl
 
     LR_GPR  r1,r2
-    NR_GPR  r1,r0          # Remove low-tag of J9Metod ptr
+    NR_GPR  r1,r0          # Remove low-tag of J9Method ptr
     LR_GPR  r3,r14         # free up r14 for RA
     L_GPR   r14,eq_privateRA_inVUCallSnippet(r14) #load RA
     TM      eq_methodCompiledFlagOffset(r1),J9TR_MethodNotCompiledBit
@@ -1809,7 +1809,7 @@ ZZ Following snippet prepares JIT helper call sequence
 ZZ which needs r14 to be free which holds address of
 ZZ Snippet from where this is called. 
 ZZ As jitResolveConstantDynamic is called via 
-ZZ SLOW_PATH_ONLY_HELPER glue, it is guranteed that
+ZZ SLOW_PATH_ONLY_HELPER glue, it is guaranteed that
 ZZ all the registers (volatile and non-volatile) are preserved.
 ZZ This allows us to use R0 to preserve R14 
 LOAD_ADDR_FROM_TOC(rEP,TR_S390jitResolveConstantDynamic)
@@ -2043,14 +2043,14 @@ ZZ                        # jit-to-jit offset, so we need to
     SRL     r2,16         # shift it to lower half
     AR_GPR  r2,r1         # Add offset to PCStart
 
-    LR_GPR  r3,r2        # jit-to-jit entry of implementor method
-    LR_GPR  r2,r14       # implementor class
+    LR_GPR  r3,r2        # jit-to-jit entry of implementer method
+    LR_GPR  r2,r14       # implementer class
 
     LR_GPR  r14,r0
 ifdef([TR_HOST_64BIT],[dnl
-    STPQ    r2,eq_implementorClass_inInterfaceSnippet(,r14)
+    STPQ    r2,eq_implementerClass_inInterfaceSnippet(,r14)
 ],[dnl
-    STM     r2,r3,eq_implementorClass_inInterfaceSnippet(r14)
+    STM     r2,r3,eq_implementerClass_inInterfaceSnippet(r14)
 ])dnl
 
 ZZ check if this picSite has already been registered,
@@ -2063,8 +2063,8 @@ ZZ
 
 ZZ Clobberable volatile regs r1,r2,r3,r14
 ZZ Preserve r0,rEP,r5,r6,r7
-ZZ For linux r6 and r7 are not used or clobbered,hense not saved
-ZZ For zos rEP(r15) is not clobbered, hense not saved
+ZZ For linux r6 and r7 are not used or clobbered, hence not saved
+ZZ For zos rEP(r15) is not clobbered, hence not saved
 
     L       CARG2,J9TR_J9Class_classLoader(r2)
 
@@ -2098,7 +2098,7 @@ ifdef([J9ZOS390],[dnl
 
     ST_GPR  J9SP,J9TR_VMThread_sp(r13)
 
-    LA      CARG2,eq_implementorClass_inInterfaceSnippet(r14)
+    LA      CARG2,eq_implementerClass_inInterfaceSnippet(r14)
 
 ZZ make the call
 
@@ -2262,7 +2262,7 @@ ZZ # Load the address of the lookup class
     LR_GPR  r14,r0
     JNZ     ifCHMLcommonJitDispatch
 
-ZZ  #Load reciving object classPtr in R2
+ZZ  #Load receiving object classPtr in R2
 ifdef([OMR_GC_COMPRESSED_POINTERS],[dnl
     L       r2,J9TR_J9Object_class(,r1)
 ZZ # Read class offset
@@ -2378,8 +2378,8 @@ ZZ  If they are same, no need to register the pic site
     JZ      ifCHMLcommonJitDispatch
 
 ZZ Need to preserve r14,rEP,r5,r6,r7
-ZZ For linux r6 and r7 are not used or clobbered,hense not saved
-ZZ For zos r14, rEP(r15) is not clobbered, hense not saved
+ZZ For linux r6 and r7 are not used or clobbered, hence not saved
+ZZ For zos r14, rEP(r15) is not clobbered, hence not saved
 
 ifdef([J9ZOS390],[dnl
     AHI_GPR J9SP,-(3*PTR_SIZE)
@@ -2482,7 +2482,7 @@ LABEL(ifCHMLTypeCheckIFCPrivate)
 ZZ  Call fast_jitInstanceOf
 ZZ  with three args: VMthread, object, and castClass.
 ZZ
-ZZ  The call to this helper follows J9S390CHelperLinakge except
+ZZ  The call to this helper follows J9S390CHelperLinkage except
 ZZ  that all volatiles are saved here.
 ZZ  instance of result is indicated in return reg
 ZZ
@@ -2532,7 +2532,7 @@ ZZ  restore all regs
     CHI_GPR CRINT,1
     JNE     ifCHMLcontinueLookup
 
-LABEL(ifCHMLInovkeIFCPrivate)
+LABEL(ifCHMLInvokeIFCPrivate)
 ZZ  remove low tag and call
     L_GPR   r0,eq_intfMethodIndex_inInterfaceSnippet(r14)
     LR_GPR  r3,r14         # free r14 for RA
@@ -2549,7 +2549,7 @@ ZZ zLinux
     LHI_GPR r2,~J9TR_J9_ITABLE_OFFSET_DIRECT
 ])dnl
 
-    NR_GPR  r1,r2         # Remove low-tag of J9Metod ptr
+    NR_GPR  r1,r2         # Remove low-tag of J9Method ptr
     L_GPR   r14,eq_codeRA_inInterfaceSnippet(r14)    #load RA
     TM      eq_methodCompiledFlagOffset(r1),J9TR_MethodNotCompiledBit
     JZ      L_jitted_private

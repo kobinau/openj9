@@ -163,7 +163,10 @@ void TR_BoolArrayStoreTransformer::perform()
             _bstoreiBoolArrayTypeNodes->insert(_bstoreiUnknownArrayTypeNodes->begin(), _bstoreiUnknownArrayTypeNodes->end());
             }
          else
-            traceMsg(comp(), "only byte array exist as auto or checkcast type\n");
+            {
+            if (comp()->getOption(TR_TraceILGen))
+               traceMsg(comp(), "only byte array exist as auto or checkcast type\n");
+            }
          _bstoreiUnknownArrayTypeNodes->clear();
          }
       }
@@ -482,7 +485,7 @@ int TR_BoolArrayStoreTransformer::getArrayDimension(TR::Node *node, bool boolTyp
  *    The subtree to look at
  *
  * \parm typeInfo
- *    The type infomation of each auto at the current subtree
+ *    The type information of each auto at the current subtree
  *
  * \parm boolArrayNodes
  *    Load of autos or parms that are [Z

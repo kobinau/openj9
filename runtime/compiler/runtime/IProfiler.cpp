@@ -2481,7 +2481,7 @@ TR_IProfiler::createIProfilingValueInfo (TR_ByteCodeInfo &bcInfo, TR::Compilatio
                   list->incrementOrCreate(address, &addrOfTotalFrequency, i, weight, &comp->trMemory()->heapMemoryRegion());
                   }
                }
-            // add resudial to last total frequency
+            // add residual to last total frequency
             *addrOfTotalFrequency = (*addrOfTotalFrequency) + csInfo->_residueWeight;
             }
          else
@@ -3879,7 +3879,7 @@ void TR_IProfiler::processWorkingQueue()
 
 extern "C" void stopInterpreterProfiling(J9JITConfig *jitConfig);
 
-/* Lower value will more aggressively skip samples as the number of unloaded classes increasses */
+/* Lower value will more aggressively skip samples as the number of unloaded classes increases */
 static const int IP_THROTTLE = 32;
 
 #if defined(NETWORK_ORDER_BYTECODE)
@@ -4328,7 +4328,7 @@ void CallSiteProfileInfo::setClazz(int index, uintptrj_t clazzPointer)
 
 
 // Supporting code for dumping IProfiler data to stderr to track possible 
-// performance issues due to insuficient or wrong IProfiler info
+// performance issues due to insufficient or wrong IProfiler info
 // Code is currently inactive. To actually use one must issue
 // iProfiler->dumpIPBCDataCallGraph(vmThread)
 // in some part of the code (typically at shutdown time) 

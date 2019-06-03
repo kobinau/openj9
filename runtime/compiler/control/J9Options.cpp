@@ -736,7 +736,7 @@ TR::OptionTable OMR::Options::_feOptions[] = {
         TR::Options::setJitConfigNumericValue, offsetof(J9JITConfig, dataCacheTotalKB), 0, " %d (KB)"},
    {"disableIProfilerClassUnloadThreshold=",      "R<nnn>\tNumber of classes that can be unloaded before we disable the IProfiler",
         TR::Options::setStaticNumeric, (intptrj_t)&TR::Options::_disableIProfilerClassUnloadThreshold, 0, "F%d", NOT_IN_SUBSET},
-   {"dltPostponeThreshold=",      "M<nnn>\tNumber of dlt attepts inv. count for a method is seen not advancing",
+   {"dltPostponeThreshold=",      "M<nnn>\tNumber of dlt attempts inv. count for a method is seen not advancing",
         TR::Options::setStaticNumeric, (intptrj_t)&TR::Options::_dltPostponeThreshold, 0, "F%d", NOT_IN_SUBSET },
    {"exclude=",           "D<xxx>\tdo not compile methods beginning with xxx", TR::Options::limitOption, 1, 0, "P%s"},
    {"expensiveCompWeight=", "M<nnn>\tweight of a comp request to be considered expensive",
@@ -1776,7 +1776,7 @@ J9::Options::fePreProcess(void * base)
    preferTLHPrefetch = TR::Compiler->target.cpu.getSupportsArch(TR::CPU::z10);
 #else /* TR_HOST_X86 */
    preferTLHPrefetch = true;
-   // Disable TM on x86 because we cannot tell whether a Haswell chip supports TM or not, plus it's killing the performace on dayTrader3
+   // Disable TM on x86 because we cannot tell whether a Haswell chip supports TM or not, plus it's killing the performance on dayTrader3
    self()->setOption(TR_DisableTM);
 #endif
 
@@ -1851,14 +1851,6 @@ J9::Options::fePreProcess(void * base)
    else
       {
       self()->setOption(TR_InlineVeryLargeCompiledMethods);
-      }
-
-   static bool enableZ15 = feGetEnv("TR_EnableZ15") != NULL;
-
-   if (!enableZ15)
-      {
-      // Disable zNext support until it has been gone through several rounds of functional stress testing
-      self()->setOption(TR_DisableZ15);
       }
 #endif
 
@@ -2293,7 +2285,7 @@ bool J9::Options::feLatePostProcess(void * base, TR::OptionSet * optionSet)
       self()->setOption(TR_DisableNextGenHCR);
       }
 
-#if !defined(TR_HOST_X86)
+#if !defined(TR_HOST_X86) && !defined(TR_HOST_S390)
    //The bit is set when -XX:+JITInlineWatches is specified
    if (J9_ARE_ANY_BITS_SET(javaVM->extendedRuntimeFlags, J9_EXTENDED_RUNTIME_JIT_INLINE_WATCHES))
       TR_ASSERT_FATAL(false, "this platform doesn't support JIT inline field watch");

@@ -147,13 +147,13 @@ private:
 
 	/**
 	 * Rebuild Compressed Card Table for Mark (multithreaded, by regions)
-	 * @param env current thread envirinment
+	 * @param env current thread environment
 	 */
 	void rebuildCompressedCardTableForMark(MM_EnvironmentVLHGC* env);
 
 	/**
 	 * Rebuild Compressed Card Table for Compact (multithreaded, by regions)
-	 * @param env current thread envirinment
+	 * @param env current thread environment
 	 */
 	void rebuildCompressedCardTableForCompact(MM_EnvironmentVLHGC* env);
 
@@ -462,14 +462,14 @@ public:
 	/**
 	 * Clears references from Collection Set and from dirty cards
 	 * (top level dispatcher)
-	 * temporary call until opimized or not optimized version is chosen
+	 * temporary call until optimized or not optimized version is chosen
 	 */
 	void clearFromRegionReferencesForMark(MM_EnvironmentVLHGC* env);
 
 	/**
 	 * Clears references from Compaction Set and from dirty cards
 	 * (top level dispatcher)
-	 * temporary call until opimized or not optimized version is chosen
+	 * temporary call until optimized or not optimized version is chosen
 	 */
 	void clearFromRegionReferencesForCompact(MM_EnvironmentVLHGC* env);
 

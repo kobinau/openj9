@@ -58,7 +58,7 @@
  * @param [in]  piconfig Pointer to a configuration structure
  * @param [in]  numLocks The number of locks to be initialized
  * @param [in]  createFlag Indicates whether cache is to be opened or created.
- * \args J9SH_OSCACHE_CREATE Create the cache if it does not exists, otherwise open existsing cache
+ * \args J9SH_OSCACHE_CREATE Create the cache if it does not exists, otherwise open existing cache
  * \args J9SH_OSCACHE_OPEXIST Open an existing cache only, failed if it doesn't exist.
  * @param [in]  verboseFlags Verbose flags
  * @param [in]  openMode Mode to open the cache in. Any of the following flags:
@@ -749,10 +749,10 @@ SH_OSCachemmap::acquireWriteLock(UDATA lockID)
 		} else if (lockID == J9SH_OSCACHE_MMAP_LOCKID_WRITELOCK) {
 			/*	CMVC 153095: Case 3
 			 * Another thread:
-			 *	- Owns RW monintor, and is waiting on (or owns) the RW lock.
+			 *	- Owns RW monitor, and is waiting on (or owns) the RW lock.
 			 * 
 			 * Current thread:
-			 *	- Owns W monintor, and gets EDEADLK on W lock.
+			 *	- Owns W monitor, and gets EDEADLK on W lock.
 			 *	
 			 * Note:
 			 *  - If the 'call stack' ends up here then it is known the current thread 

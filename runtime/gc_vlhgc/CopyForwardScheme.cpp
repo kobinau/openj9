@@ -620,7 +620,7 @@ MM_CopyForwardScheme::preProcessRegions(MM_EnvironmentVLHGC *env)
 				region->getOwnableSynchronizerObjectList()->startOwnableSynchronizerProcessing();
 				Assert_MM_true(region->getRememberedSetCardList()->isAccurate());
 				if ((region->_criticalRegionsInUse > 0) || (randomDecideForceNonEvacuatedRegion(_extensions->fvtest_forceCopyForwardHybridRatio))) {
-					/* set the region is noEvacation for copyforward collector */
+					/* set the region is noEvacuation for copyforward collector */
 					region->_markData._noEvacuation = true;
 					_regionCountCannotBeEvacuated += 1;
 				} else if ((_regionCountReservedNonEvacuated > 0) && region->isEden()){
@@ -1715,7 +1715,7 @@ MM_CopyForwardScheme::mergeGCStats(MM_EnvironmentVLHGC *env)
 	static_cast<MM_CycleStateVLHGC*>(env->_cycleState)->_vlhgcIncrementStats._irrsStats.merge(&env->_irrsStats);
 	omrthread_monitor_exit(_extensions->gcStatsMutex);
 	
-	/* record the thread-specific paralellism stats in the trace buffer. This partially duplicates info in -Xtgc:parallel */ 
+	/* record the thread-specific parallelism stats in the trace buffer. This partially duplicates info in -Xtgc:parallel */ 
 	Trc_MM_CopyForwardScheme_parallelStats(
 		env->getLanguageVMThread(),
 		(U_32)env->getSlaveID(),
@@ -2048,7 +2048,7 @@ MM_CopyForwardScheme::copy(MM_EnvironmentVLHGC *env, MM_AllocationContextTarok *
 	}
 
 	if (_abortInProgress || noEvacuation) {
-		/* Once threads agreed that abort is in progress or the object is in noEvacation region, only mark/push should be happening, no attempts even to allocate/copy */
+		/* Once threads agreed that abort is in progress or the object is in noEvacuation region, only mark/push should be happening, no attempts even to allocate/copy */
 
 		if (_markMap->atomicSetBit(object)) {
 			Assert_MM_false(MM_ScavengerForwardedHeader(object).isForwardedPointer());
@@ -2227,7 +2227,7 @@ MM_CopyForwardScheme::copyLeafChildren(MM_EnvironmentVLHGC* env, MM_AllocationCo
 				if (1 == (leafBits & 1)) {
 					/* Copy/Forward the slot reference and perform any inter-region remember work that is required */
 					GC_SlotObject slotObject(_javaVM->omrVM, scanPtr);
-					/* pass leaf flag into copy method for optimazing abort case and hybrid case (don't need to push leaf object in work stack) */
+					/* pass leaf flag into copy method for optimizing abort case and hybrid case (don't need to push leaf object in work stack) */
 					copyAndForward(env, reservingContext, objectPtr, &slotObject, true);
 				}
 				leafBits >>= 1;
@@ -2718,23 +2718,24 @@ MM_CopyForwardScheme::scanClassLoaderObjectSlots(MM_EnvironmentVLHGC *env, MM_Al
 				success = copyAndForward(env, reservingContext, classLoaderObject, (J9Object **)&(clazz->classObject));
 			}
 
-			Assert_MM_true(NULL != classLoader->moduleHashTable);
-			J9HashTableState walkState;
-			J9Module **modulePtr = (J9Module **)hashTableStartDo(classLoader->moduleHashTable, &walkState);
-			while (success && (NULL != modulePtr)) {
-				J9Module * const module = *modulePtr;
-				success = copyAndForward(env, reservingContext, classLoaderObject, (J9Object **)&(module->moduleObject));
-				if (success) {
-					if (NULL != module->moduleName) {
-						success = copyAndForward(env, reservingContext, classLoaderObject, (J9Object **)&(module->moduleName));
+			if (NULL != classLoader->moduleHashTable) {
+				J9HashTableState walkState;
+				J9Module **modulePtr = (J9Module **)hashTableStartDo(classLoader->moduleHashTable, &walkState);
+				while (success && (NULL != modulePtr)) {
+					J9Module * const module = *modulePtr;
+					success = copyAndForward(env, reservingContext, classLoaderObject, (J9Object **)&(module->moduleObject));
+					if (success) {
+						if (NULL != module->moduleName) {
+							success = copyAndForward(env, reservingContext, classLoaderObject, (J9Object **)&(module->moduleName));
+						}
 					}
-				}
-				if (success) {
-					if (NULL != module->version) {
-						success = copyAndForward(env, reservingContext, classLoaderObject, (J9Object **)&(module->version));
+					if (success) {
+						if (NULL != module->version) {
+							success = copyAndForward(env, reservingContext, classLoaderObject, (J9Object **)&(module->version));
+						}
 					}
+					modulePtr = (J9Module**)hashTableNextDo(&walkState);
 				}
-				modulePtr = (J9Module**)hashTableNextDo(&walkState);
 			}
 		}
 	}
@@ -2966,7 +2967,7 @@ MM_CopyForwardScheme::aliasToCopyCache(MM_EnvironmentVLHGC *env, MM_CopyScanCach
 	Assert_MM_unimplemented();
 #if 0
 	/* VMDESIGN 1359.
-	 * Only alias the _surviorCopyScanCache IF there are 0 threads waiting.  If the current thread is the only producer and
+	 * Only alias the _survivorCopyScanCache IF there are 0 threads waiting.  If the current thread is the only producer and
 	 * it aliases it's survivor cache then it will be the only thread able to consume.  This will alleviate the stalling issues
 	 * described in the above mentioned design.
 	 */
@@ -3256,7 +3257,7 @@ MM_CopyForwardScheme::incrementalScanCacheBySlot(MM_EnvironmentVLHGC *env)
 	scanCache->setCurrentlyBeingScanned();
 	bool hasPartiallyScannedObject = scanCache->_hasPartiallyScannedObject;
 	if (scanCache->isScanWorkAvailable()) {
-		/* we want to perform a NUMA-aware analogue to "heirarchical scanning" so this scan cache should pull other objects into its node */
+		/* we want to perform a NUMA-aware analogue to "hierarchical scanning" so this scan cache should pull other objects into its node */
 		MM_AllocationContextTarok *reservingContext = getContextForHeapAddress(env->_scanCache->scanCurrent);
 		do {
 			void *cacheAlloc = scanCache->cacheAlloc;
@@ -4378,23 +4379,24 @@ MM_CopyForwardScheme::scanRoots(MM_EnvironmentVLHGC* env)
 									success = copyAndForward(env, clazzContext, (J9Object **)&(clazz->classObject));
 								}
 
-								Assert_MM_true(NULL != classLoader->moduleHashTable);
-								J9HashTableState walkState;
-								J9Module **modulePtr = (J9Module **)hashTableStartDo(classLoader->moduleHashTable, &walkState);
-								while (success && (NULL != modulePtr)) {
-									J9Module * const module = *modulePtr;
-									success = copyAndForward(env, getContextForHeapAddress(module->moduleObject), (J9Object **)&(module->moduleObject));
-									if (success) {
-										if (NULL != module->moduleName) {
-											success = copyAndForward(env, getContextForHeapAddress(module->moduleName), (J9Object **)&(module->moduleName));
+								if (NULL != classLoader->moduleHashTable) {
+									J9HashTableState walkState;
+									J9Module **modulePtr = (J9Module **)hashTableStartDo(classLoader->moduleHashTable, &walkState);
+									while (success && (NULL != modulePtr)) {
+										J9Module * const module = *modulePtr;
+										success = copyAndForward(env, getContextForHeapAddress(module->moduleObject), (J9Object **)&(module->moduleObject));
+										if (success) {
+											if (NULL != module->moduleName) {
+												success = copyAndForward(env, getContextForHeapAddress(module->moduleName), (J9Object **)&(module->moduleName));
+											}
 										}
-									}
-									if (success) {
-										if (NULL != module->version) {
-											success = copyAndForward(env, getContextForHeapAddress(module->version), (J9Object **)&(module->version));
+										if (success) {
+											if (NULL != module->version) {
+												success = copyAndForward(env, getContextForHeapAddress(module->version), (J9Object **)&(module->version));
+											}
 										}
+										modulePtr = (J9Module**)hashTableNextDo(&walkState);
 									}
-									modulePtr = (J9Module**)hashTableNextDo(&walkState);
 								}
 							}
 						}

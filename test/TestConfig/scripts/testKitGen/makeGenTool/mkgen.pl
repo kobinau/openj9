@@ -162,7 +162,7 @@ sub generateOnDir {
 	while ( my $entry = readdir $dir ) {
 		next if $entry eq '.' or $entry eq '..';
 		my $tempExclude = 0;
-		# tmporary exclusion, remove this block when JCL_VERSION separation is removed
+		# temporary exclusion, remove this block when JCL_VERSION separation is removed
 		if (($jdkVersion ne "Panama") && ($jdkVersion ne "Valhalla")) {
 			my $JCL_VERSION = '';
 			if ( exists $ENV{'JCL_VERSION'} ) {
@@ -490,6 +490,7 @@ sub writeTargets {
 	foreach my $test ( @{ $result->{'tests'} } ) {
 		my $count    = 0;
 		my @subtests = ();
+		my $testIterations = $iterations;
 		foreach my $var ( @{ $test->{'variation'} } ) {
 			my $jvmoptions = ' ' . $var . ' ';
 			$jvmoptions =~ s/\ NoOptions\ //x;
@@ -566,8 +567,9 @@ sub writeTargets {
 				if ( $test->{'aot'} eq 'applicable' ) {
 					$aotOptions = '$(AOT_OPTIONS) ';
 				} elsif ( $test->{'aot'} eq 'explicit' ) {
-					# When test tagged with aot explicit, its test command has aot options and runs multiple times explictly.
-					$iterations = 1;
+					# When test tagged with aot explicit, its test command has aot options and runs multiple times explicitly.
+					$testIterations = 1;
+					print $fhOut "$name: TEST_ITERATIONS=1\n";
 				}
 			}
 
@@ -623,10 +625,10 @@ sub writeTargets {
 			$command =~ s/\s+$//;
 
 			print $fhOut "$indent\{ ";
-			for (my $i = 1; $i <= $iterations; $i++) {
+			for (my $i = 1; $i <= $testIterations; $i++) {
 				print $fhOut "itercnt=$i; \\\n$indent\$(MKTREE) \$(REPORTDIR); \\\n$indent\$(CD) \$(REPORTDIR); \\\n";
 				print $fhOut "$indent$command;";
-				if ($i ne $iterations) {
+				if ($i ne $testIterations) {
 					print $fhOut " \\\n$indent";
 				}
 			}

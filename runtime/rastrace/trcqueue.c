@@ -438,7 +438,7 @@ publishMessage(qQueue *queue, qMessage *msg)
 	}
 
 	/* ensure that we can queue new messages now that msg has a fixed place in the queue */
-	/* CMVC 149252: moved this from just after the cmpxchg loop to here so that publishing is guarrenteed to have finished */
+	/* CMVC 149252: moved this from just after the cmpxchg loop to here so that publishing is guaranteed to have finished */
 	msg->next = NULL;
 	return TRUE;
 }
@@ -597,7 +597,7 @@ acquireNextMessage(qSubscription *sub)
 		return NULL;
 	}
 
-	/* we now longer have the possibiity of needing a reference to the current last in unsubscribe, so we're done with it */
+	/* we now longer have the possibility of needing a reference to the current last in unsubscribe, so we're done with it */
 	if (sub->last != NULL && sub->savedReference == TRUE) {
 		UT_DBGOUT(5, ("<UT> removing reference to message "UT_POINTER_SPEC"\n", queue, sub->last));
 		sub->savedReference = FALSE;

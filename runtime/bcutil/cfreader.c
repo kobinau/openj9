@@ -2377,7 +2377,7 @@ checkClass(J9PortLibrary *portLib, J9CfrClassFile* classfile, U_8* segment, U_32
 /*
 	Read the class file from the bytes in @data.
 	Returns:
-		-2 on insufficent space
+		-2 on insufficient space
 		-1 on error
 		0 on success
 		(required segment size)
@@ -2488,7 +2488,7 @@ j9bcutil_readClassFileBytes(J9PortLibrary *portLib,
 	/* Space for the constant pool */
 
 	if (J9_ARE_ANY_BITS_SET(findClassFlags, J9_FINDCLASS_FLAG_ANON)) {
-		/* Pre-emptively add new entry to the end of the constantPool for the modified anonClassName.
+		/* Preemptively add new entry to the end of the constantPool for the modified anonClassName.
 		 * If it turns out we dont need it, simply reduce the constantPoolCount by 1, which is
 		 * cheaper than allocating twice.
 		 *

@@ -694,7 +694,7 @@ MM_IncrementalGenerationalGC::collectorShutdown(MM_GCExtensionsBase *extensions)
 
 /**
  * Determine if a  expand is required 
- * @return expand size if rator expand required or 0 otheriwse
+ * @return expand size if rator expand required or 0 otherwise
  */
 U_32
 MM_IncrementalGenerationalGC::getGCTimePercentage(MM_EnvironmentBase *env)
@@ -1238,8 +1238,8 @@ MM_IncrementalGenerationalGC::partialGarbageCollect(MM_EnvironmentVLHGC *env, MM
 		_schedulingDelegate.setAutomaticDefragmentEmptinessThreshold(optimalEmptinessRegionThreshold);
 	}
 
-	/* For Non CopyForwardHybrid mode, we don't allow any eden rgions with jniCritical for copyforward, if there is any, would switch MarkCompact PGC mode
-	 * For CopyForwardHybrid mode, we do not care about jniCritical eden regions, the eden rgions with jniCritical would be marked instead copyforwarded during collection.*/
+	/* For Non CopyForwardHybrid mode, we don't allow any eden regions with jniCritical for copyforward, if there is any, would switch MarkCompact PGC mode
+	 * For CopyForwardHybrid mode, we do not care about jniCritical eden regions, the eden regions with jniCritical would be marked instead copyforwarded during collection.*/
 	if (!_extensions->tarokEnableCopyForwardHybrid && (0 == _extensions->fvtest_forceCopyForwardHybridRatio)) {
 		if (env->_cycleState->_shouldRunCopyForward) {
 			MM_HeapRegionDescriptorVLHGC *region = NULL;
@@ -1620,7 +1620,7 @@ MM_IncrementalGenerationalGC::incrementRegionAges(MM_EnvironmentVLHGC *env, UDAT
 	}
 
 	/* Overflowing stable regions releases buffers to thread local pool. Move them now to the locked global pool.
-	 * (if this is run in context of non-GC thread there will be not further opportinities to do it).
+	 * (if this is run in context of non-GC thread there will be not further opportunities to do it).
 	 */
 	_interRegionRememberedSet->releaseCardBufferControlBlockListForThread(env, env);
 }
@@ -1954,15 +1954,6 @@ MM_IncrementalGenerationalGC::triggerGlobalGCEndHook(MM_EnvironmentVLHGC *env)
 	/* these are assigned to temporary variable out-of-line since some preprocessors get confused if you have directives in macros */
 	UDATA approximateActiveFreeMemorySize = 0;
 	UDATA activeMemorySize = 0;
-
-	Assert_MM_true(!_extensions->isMetronomeGC());
-	TRIGGER_J9HOOK_MM_PRIVATE_REPORT_MEMORY_USAGE(
-		_extensions->privateHookInterface,
-		env->getOmrVMThread(), 
-		j9time_hires_clock(), 
-		J9HOOK_MM_PRIVATE_REPORT_MEMORY_USAGE,
-		_extensions->getForge()->getCurrentStatistics()
-	);
 	
 	TRIGGER_J9HOOK_MM_OMR_GLOBAL_GC_END(
 		_extensions->omrHookInterface,

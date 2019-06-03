@@ -1,5 +1,6 @@
+/*[INCLUDE-IF Sidecar19-SE]*/
 /*******************************************************************************
- * Copyright (c) 2005, 2018 IBM Corp. and others
+ * Copyright (c) 2018, 2019 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -19,13 +20,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
  *******************************************************************************/
+package com.ibm.gpu.spi;
 
 /**
- * @author Matthew Kilner
+ * GPUAssistHolder is an internal class used by java.util.Arrays.
  */
-public class Aligator implements Utilities.TestClass {
+public final class GPUAssistHolder {
 
-	public String getLocation() {
-		return "AnimalsJar";
-	}
+	/**
+	 * The value of this field is updated as necessary by System.completeInitialization().
+	 */
+	public static GPUAssist instance = GPUAssist.NONE;
+
 }

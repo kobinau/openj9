@@ -679,7 +679,7 @@ gcParseXlpOption(J9JavaVM *vm)
 		IDATA result = j9vmem_find_valid_page_size(0, &pageSize, &pageFlags, &isRequestedSizeSupported);
 
 		/*
-		 * j9vmem_find_valid_page_size happend to be changed to always return 0
+		 * j9vmem_find_valid_page_size happened to be changed to always return 0
 		 * However formally the function type still be IDATA so assert if it returns anything else
 		 */
 		Assert_MM_true(0 == result);
@@ -1145,7 +1145,7 @@ gcParseSovereignArguments(J9JavaVM *vm)
 	
 #endif /* J9VM_GC_LARGE_OBJECT_AREA) */
 
-	/* If user has specifed any of the following SOV options  then we just silently ignore them 
+	/* If user has specified any of the following SOV options  then we just silently ignore them 
 	 * 
 	 * -Xparroot
 	 * -XloratioN 
@@ -1432,7 +1432,7 @@ gcParseCommandLineAndInitializeWithValues(J9JavaVM *vm, IDATA *memoryParameters)
 	PORT_ACCESS_FROM_JAVAVM(vm);
 
 	/* Parse the command line 
-	 * Order is important for paramters that match as substrings (-Xmrx/-Xmr)
+	 * Order is important for parameters that match as substrings (-Xmrx/-Xmr)
 	 */
 	result = option_set_to_opt(vm, OPT_XMCA, &index, EXACT_MEMORY_MATCH, &vm->ramClassAllocationIncrement);
 	if (OPTION_OK != result) {

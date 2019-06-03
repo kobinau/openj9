@@ -180,7 +180,7 @@ private:
 	 * Shareable thunk compilation is based on the ThunkTuple counting.
 	 * Shareable thunks then modify the MH.invocationCount on each invocation.  We
 	 * only want invocations from jitted code to drive CustomThunk compilation so the
-	 * interpreter needs to pre-emptively negate the modification to the invocationCount.
+	 * interpreter needs to preemptively negate the modification to the invocationCount.
 	 *
 	 * @param methodHandle[in] The MethodHandle to modify the count on
 	 */
@@ -2384,7 +2384,7 @@ done:;
 				ffi_raw_call(cif, FFI_FN(function), returnStorage, values_raw);
 #else /* FFI_NATIVE_RAW_API */
 				ffi_call(cif, FFI_FN(function), returnStorage, values);
-#endif /* FFI_NATOVE_RAW_API */
+#endif /* FFI_NATIVE_RAW_API */
 				ret = ffiSuccess;
 			}
 		}
@@ -2413,6 +2413,8 @@ ffi_exit:
 		_currentThread->currentException = NULL;
 		/* Only report the event if the tag is set - this prevents reporting multiple throws of the same exception when returning from internal call-in */
 		if (_currentThread->privateFlags & J9_PRIVATE_FLAGS_REPORT_EXCEPTION_THROW) {
+			/* Clear the flag once the entered the reporting branch */
+			_currentThread->privateFlags &= ~(UDATA)J9_PRIVATE_FLAGS_REPORT_EXCEPTION_THROW;
 			if (J9_EVENT_IS_HOOKED(_vm->hookInterface, J9HOOK_VM_EXCEPTION_THROW)) {
 				ALWAYS_TRIGGER_J9HOOK_VM_EXCEPTION_THROW(_vm->hookInterface, _currentThread, exception);
 				if (immediateAsyncPending()) {
@@ -4155,7 +4157,7 @@ internalError:
 		} else {
 			updateVMStruct(REGISTER_ARGS);
 			J9ClassLoader* result = internalAllocateClassLoader(_vm, classLoaderObject);
-			VMStructHasBeenUpdated(REGISTER_ARGS); // likely unncessary - no code runs in internalAllocateClassLoader
+			VMStructHasBeenUpdated(REGISTER_ARGS); // likely unnecessary - no code runs in internalAllocateClassLoader
 			if (NULL == result) {
 				rc = GOTO_THROW_CURRENT_EXCEPTION;
 				goto done;
@@ -7188,7 +7190,7 @@ done:
 	 *
 	 * @param[in] lhs the lhs object of acmp bytecodes
 	 * @param[in] rhs the rhs object of acmp bytecodes
-	 * return true if they are substituable and false otherwise
+	 * return true if they are substitutable and false otherwise
 	 */
 	VMINLINE bool
 	acmp(j9object_t lhs, j9object_t rhs)

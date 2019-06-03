@@ -1223,7 +1223,7 @@ public class MethodHandles {
 		
 		/**
 		 * Make a MethodHandle to the Reflect method.  If the method is non-static, the receiver argument
-		 * is treated as the intial argument in the MethodType.  
+		 * is treated as the initial argument in the MethodType.  
 		 * <p>
 		 * If m is a virtual method, normal virtual dispatch is used on each invocation.
 		 * <p>
@@ -1327,7 +1327,7 @@ public class MethodHandles {
 
 		/**
 		 * Return a MethodHandle for the reflect constructor. The MethodType has a return type
-		 * of the declared class, and the arguments of the constructor.  The MehtodHnadle
+		 * of the declared class, and the arguments of the constructor.  The MethodHandle
 		 * creates a new object as through by newInstance.  
 		 * <p>
 		 * If the <code>accessible</code> flag is not set, then access checking
@@ -2007,7 +2007,8 @@ public class MethodHandles {
 	 * 
 	 * If a SecurityManager is present, this method requires <code>ReflectPermission("suppressAccessChecks")</code>.
 	 * 
-	 * @param expected the expected type of the underlying member
+	 * @param <T> the type of the underlying member
+	 * @param expected the expected Class of the underlying member
 	 * @param target the direct MethodHandle to be cracked
 	 * @return the underlying member of the <code>target</code> MethodHandle
 	 * @throws SecurityException if the caller does not have the required permission (<code>ReflectPermission("suppressAccessChecks")</code>)
@@ -2415,7 +2416,7 @@ public class MethodHandles {
 	 * and the third will be the item to write into the array
 	 * 
 	 * @param arrayType - the type of the array
-	 * @return a MehtodHandle able to write into the array
+	 * @return a MethodHandle able to write into the array
 	 * @throws IllegalArgumentException - if arrayType is not actually an array
 	 */
 	public static MethodHandle arrayElementSetter(Class<?> arrayType) throws IllegalArgumentException {

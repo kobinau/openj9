@@ -67,7 +67,7 @@ add_custom_command(
 )
 add_custom_target(j9jit_tracegen DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/env/ut_j9jit.h)
 
-#TODO We should get rid of this, but its still requred by the compiler_support module in omr
+#TODO We should get rid of this, but its still required by the compiler_support module in omr
 set(J9SRC  ${j9vm_SOURCE_DIR})
 
 
@@ -163,7 +163,7 @@ set(TARGET_DEFINES
 # PASM2ASM about target includes.
 #
 # In the mean time, like the makefiles, this is is using
-# the inlcudes from the SDK
+# the includes from the SDK
 set(J9_INCLUDES
 	# From jitinclude.mk
 	${omr_SOURCE_DIR}/thread

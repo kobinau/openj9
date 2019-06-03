@@ -500,7 +500,7 @@ verifyBytecodes (J9BytecodeVerificationData * verifyData)
 	liveStack->stackBaseIndex = liveStack->stackTopIndex;
 
 	/* Jazz 105041: Initialize the 1st data slot on 'stack' with 'top' (placeholdler)
-	 * to avoid storing gargbage data type in the error message buffer
+	 * to avoid storing garbage data type in the error message buffer
 	 * when stack underflow occurs.
 	 */
 	liveStack->stackElements[liveStack->stackBaseIndex] = BCV_BASE_TYPE_TOP;
@@ -554,7 +554,7 @@ _inconsistentStack2:
 				}
 				/* Jazz 82615: Set liveStack->pc to the next pc value rather than the current pc value (start)
 				 * in the case of the matched stack frame in the current frame (liveStack)
-				 * of the detaile error message
+				 * of the detailed error message
 			 	 */
 				liveStack->pc = pc;
 				goto _mapError;
@@ -1713,7 +1713,7 @@ _illegalPrimitiveReturn:
 
 							/* the lazy evaluation would guarantee reasonCode reflects the first failure.
 							 * In all three functions, returned boolean value would indicate an error occurred and the reasonCode is set to BCV_ERR_INSUFFICIENT_MEMORY in OOM cases.
-							 * Hence, if any of the 3 conditions should fail, if it is not on OOM as readonCode would indicate, it must be a verification error.
+							 * Hence, if any of the 3 conditions should fail, if it is not on OOM as reasonCode would indicate, it must be a verification error.
 							 */
 							if ((FALSE == isClassCompatibleByName(verifyData, classIndex, J9UTF8_DATA(utf8string), J9UTF8_LENGTH(utf8string), &reasonCode))
 							|| (FALSE == isClassCompatible(verifyData, type, classIndex, &reasonCode))

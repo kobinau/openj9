@@ -239,6 +239,23 @@ RUN cd /usr/src \
   && cd .. \
   && rm -rf /usr/src/curl-7.29.0
 
+# Install Python3 v3.7.3
+RUN yum -y update \
+  && yum -y install \
+    zlib-devel \
+    libffi-devel \
+  && yum clean all \
+  && cd /tmp \
+  && wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tar.xz \
+  && tar -xJf Python-3.7.3.tar.xz \
+  && rm -f Python-3.7.3.tar.xz \
+  && cd /tmp/Python-3.7.3 \
+  && ./configure --prefix=/usr/local \
+  && make \
+  && make install \
+  && cd .. \
+  && rm -rf Python-3.7.3
+
 # Setup a reference repository cache for faster clones in the container
 RUN mkdir /home/${USER}/openjdk_cache \
   && cd /home/${USER}/openjdk_cache \
@@ -248,7 +265,8 @@ RUN mkdir /home/${USER}/openjdk_cache \
   && git remote add jdk https://github.com/ibmruntimes/openj9-openjdk-jdk.git \
   && git remote add openj9 https://github.com/eclipse/openj9.git \
   && git remote add omr https://github.com/eclipse/openj9-omr.git \
-  && git fetch --all
+  && git fetch --all \
+  && git gc --aggressive --prune=all
 
 # set up sshd config
 RUN mkdir /var/run/sshd \

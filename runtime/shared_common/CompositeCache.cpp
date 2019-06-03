@@ -446,7 +446,7 @@ SH_CompositeCacheImpl::getRequiredConstrBytes(bool isNested, bool startupForStat
 
 
 /**
- * Get required bytes for a constructor including the common info sturcture.
+ * Get required bytes for a constructor including the common info structure.
  *
  * @return Number of bytes required for getRequiredConstrBytesWithCommonInfo
  */
@@ -2820,7 +2820,7 @@ SH_CompositeCacheImpl::allocate(J9VMThread* currentThread, U_8 type, ShcItem* it
 		if (ALLOCATE_TYPE_BLOCK == type) {
 			/* Similar to the behaviour when setting J9SHR_BLOCK_SPACE_FULL,
 			 * if available bytes < CC_MIN_SPACE_BEFORE_CACHE_FULL, J9SHR_AVAILABLE_SPACE_FULL is set in the previous commit. J9SHR_RUNTIMEFLAG_AVAILABLE_SPACE_FULL is checked in 
-			 * higher level APIs in SH_CacheMap. If it is set, higher level APIs will return direcly and we would not reach here. 
+			 * higher level APIs in SH_CacheMap. If it is set, higher level APIs will return directly and we would not reach here. 
 			 * if available bytes >= CC_MIN_SPACE_BEFORE_CACHE_FULL, do not set J9SHR_AVAILABLE_SPACE_FULL here as it is above the threshold.
 			 */
 			Trc_SHR_Assert_True((softMaxValue - usedBytes) >= CC_MIN_SPACE_BEFORE_CACHE_FULL);
@@ -3046,7 +3046,7 @@ SH_CompositeCacheImpl::rollbackUpdate(J9VMThread* currentThread)
 }
 
 /**
- * Updatte value of _storedSegmentUsedBytes
+ * Update value of _storedSegmentUsedBytes
  *
  * Called before ::commitUpdate() if ROM Classes builder allocated more than it needed.
  *
@@ -3843,7 +3843,7 @@ SH_CompositeCacheImpl::runExitCode(J9VMThread *currentThread)
 	unprotectHeaderReadWriteArea(currentThread, false);
 	Trc_SHR_Assert_Equals(_readWriteProtectCntr, 0);
 #endif
-	/* If mprotect=all is not set, then final value of _headerProtectCntr should be same is its inital value (= 1).
+	/* If mprotect=all is not set, then final value of _headerProtectCntr should be same is its initial value (= 1).
 	 * If mprotect=all is set, then above call to unprotectHeaderReadWriteArea() will set it to 1.
 	 */
 	Trc_SHR_Assert_Equals(_headerProtectCntr, 1);
@@ -4046,7 +4046,7 @@ SH_CompositeCacheImpl::enterReadWriteAreaMutex(J9VMThread* currentThread, BOOLEA
 
 /**
  * Exit readWrite area mutex
- * Note that when the function returns, the readWrite area will be proected if mprotect is enabled.
+ * Note that when the function returns, the readWrite area will be protected if mprotect is enabled.
  * It will also have been msync'd if msync is enabled.
  *
  * @param [in] currentThread  Point to the J9VMThread struct for the current thread
@@ -4103,7 +4103,7 @@ SH_CompositeCacheImpl::exitReadWriteAreaMutex(J9VMThread* currentThread, UDATA r
 		}
 
 		/**
-		 * Do assertion checks before relasing the lock to prevent others threads changing the values of
+		 * Do assertion checks before releasing the lock to prevent others threads changing the values of
 		 * _headerProtectCntr and _readWriteProtectCntr
 		 */
 		if (0 != (*_runtimeFlags & J9SHR_RUNTIMEFLAG_ENABLE_MPROTECT_ALL)) {
@@ -5368,7 +5368,7 @@ SH_CompositeCacheImpl::allocateClassDebugData(J9VMThread* currentThread, U_16 cl
 }
 
 /**
- * Roll back uncommited changes made by the last call too 'allocateClassDebugData()'
+ * Roll back uncommitted changes made by the last call too 'allocateClassDebugData()'
  *
  * @param [in] currentThread the thread calling this function
  * @param [in] classnameLength ROMClass class name length
@@ -6376,7 +6376,7 @@ SH_CompositeCacheImpl::tryAdjustMinMaxSizes(J9VMThread *currentThread, bool isJC
 		goto done;
 	}
 
-	/* set the variables inside the wirte mutex */
+	/* set the variables inside the write mutex */
 	adjustMinAOT = (_sharedClassConfig->minAOT >= 0);
 	adjustMaxAOT = (_sharedClassConfig->maxAOT >= 0);
 	adjustMinJIT = (_sharedClassConfig->minJIT >= 0);
@@ -6454,7 +6454,7 @@ SH_CompositeCacheImpl::tryAdjustMinMaxSizes(J9VMThread *currentThread, bool isJC
 		I_32 freeDebugBytes = (I_32)(_theca->localVariableTableNextSRP - _theca->lineNumberTableNextSRP);
 		U_32 maxUsedBytes = (maxLimit < (totalBytes - freeDebugBytes - J9SHR_MIN_GAP_BEFORE_METADATA)) ? maxLimit : (totalBytes - freeDebugBytes - J9SHR_MIN_GAP_BEFORE_METADATA);
 		/* The reserved AOT/JIT data space can only come from space between updateSRP and segmentSRP, so free space in debug area should be subtracted.
-		 * Leave at leaset J9SHR_MIN_GAP_BEFORE_METADATA, so J9SHR_MIN_GAP_BEFORE_METADATA should also be subtracted.
+		 * Leave at least J9SHR_MIN_GAP_BEFORE_METADATA, so J9SHR_MIN_GAP_BEFORE_METADATA should also be subtracted.
 		 */
 		if ((usedAOTBytesAfter - usedAOTBytesBefore + usedJITBytesAfter - usedJIBytesBefore + usedBytesBefore) > maxUsedBytes) {
 			CC_WARNING_TRACE(J9NLS_SHRC_CC_TOTAL_USED_BYTES_GRTHAN_MAXLIMIT, isJCLCall);
@@ -6611,7 +6611,7 @@ SH_CompositeCacheImpl::updateRuntimeFullFlags(J9VMThread *currentThread)
 		if (J9_ARE_ALL_BITS_SET(*_runtimeFlags, J9SHR_RUNTIMEFLAG_AVAILABLE_SPACE_FULL)) {
 			if (J9_ARE_NO_BITS_SET(*_runtimeFlags, J9SHR_RUNTIMEFLAG_BLOCK_SPACE_FULL)) {
 				/* J9SHR_BLOCK_SPACE_FULL is always unset together with J9SHR_AVAILABLE_SPACE_FULL, do not need to remove J9AVLTREE_DISABLE_SHARED_TREE_UPDATES
-				 * when unseting J9SHR_RUNTIMEFLAG_BLOCK_SPACE_FULL, do it here is enough.
+				 * when unsetting J9SHR_RUNTIMEFLAG_BLOCK_SPACE_FULL, do it here is enough.
 				 */
 				if (NULL != currentThread->javaVM->sharedInvariantInternTable) {
 					Trc_SHR_CC_updateRuntimeFullFlags_flagUnset(currentThread, J9AVLTREE_DISABLE_SHARED_TREE_UPDATES);
@@ -6684,7 +6684,7 @@ SH_CompositeCacheImpl::updateRuntimeFullFlags(J9VMThread *currentThread)
 
 	*_runtimeFlags &= ~flagUnset;
 	*_runtimeFlags |= flagSet;
-	/* JAZZ103 108287 Add wirte barrier to ensure the setting/unsetting of runtime flags happens before resetting 
+	/* JAZZ103 108287 Add write barrier to ensure the setting/unsetting of runtime flags happens before resetting 
 	 * _maxAOTUnstoredBytes/_maxJITUnstoredBytes/_softmxUnstoredBytes to 0.
 	 */
 	VM_AtomicSupport::writeBarrier();

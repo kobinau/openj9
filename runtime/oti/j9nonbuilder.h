@@ -144,7 +144,7 @@
 #define J9DescriptionReturnTypeInt 0x6
 #define J9DescriptionReturnTypeDouble 0x7
 #define J9DescriptionReturnTypeLong 0x8
-/* ROM CP have 32 bit slots, currently the least significat 20 bits are in use
+/* ROM CP have 32 bit slots, currently the least significant 20 bits are in use
  * so the Constant Dynamic return types will be shifted left to use the free bits
  */
 #define J9DescriptionReturnTypeShift 20
@@ -4341,6 +4341,7 @@ typedef struct J9MemoryManagerFunctions {
 	UDATA  ( *j9gc_arraylet_getLeafSize)(struct J9JavaVM* javaVM) ;
 	UDATA  ( *j9gc_arraylet_getLeafLogSize)(struct J9JavaVM* javaVM) ;
 #endif /* J9VM_GC_ARRAYLETS */
+	void  ( *j9gc_set_allocation_sampling_interval)(struct J9VMThread *vmThread, UDATA samplingInterval);
 	void  ( *j9gc_set_allocation_threshold)(struct J9VMThread *vmThread, UDATA low, UDATA high) ;
 	void  ( *j9gc_objaccess_recentlyAllocatedObject)(struct J9VMThread *vmThread, J9Object *dstObject) ;
 	void  ( *j9gc_objaccess_postStoreClassToClassLoader)(struct J9VMThread* vmThread, J9ClassLoader* destClassLoader, J9Class* srcClass) ;
@@ -4815,7 +4816,6 @@ typedef struct J9VMThread {
 	UDATA debugEventData6;
 	UDATA debugEventData7;
 	UDATA debugEventData8;
-	struct J9Class* methodHandlesLookupAccessClass;
 	struct J9ClassLoadingStackElement* classLoadingStack;
 	UDATA jitTransitionJumpSlot;
 	omrthread_monitor_t gcClassUnloadingMutex;
@@ -4873,7 +4873,7 @@ typedef struct J9VMThread {
 	U_32 ludclBPOffset;
 #if defined(J9VM_JIT_FREE_SYSTEM_STACK_POINTER)
 	UDATA systemStackPointer;
-#if !defined(J9VM_ENV_DATA64)
+#if 0 && !defined(J9VM_ENV_DATA64) /* Change to 0 or 1 based on number of fields above */
 	U_32 zosPadTo8;
 #endif /* !J9VM_ENV_DATA64 */
 #endif /* J9VM_JIT_FREE_SYSTEM_STACK_POINTER */
@@ -4885,7 +4885,7 @@ typedef struct J9VMThread {
 	UDATA jitCurrentRIFlags;
 	UDATA jitPendingRIFlags;
 	struct J9RIParameters *riParameters;
-#if !defined(J9VM_ENV_DATA64)
+#if !defined(J9VM_ENV_DATA64) && defined(J9VM_JIT_FREE_SYSTEM_STACK_POINTER)
 	U_32 riPadTo8;
 #endif /* !J9VM_ENV_DATA64 */
 #endif /* J9VM_JIT_RUNTIME_INSTRUMENTATION */
@@ -5669,7 +5669,7 @@ typedef struct J9CInterpreterStackFrame {
 	 */
 #endif /* J9VM_ENV_DATA64 */
 #else /* J9VM_ARCH_X86 */
-#error Unknown architechture
+#error Unknown architecture
 #endif /* J9VM_ARCH_X86 */
 } J9CInterpreterStackFrame;
 

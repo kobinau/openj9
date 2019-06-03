@@ -73,7 +73,10 @@ J9::CodeGenerator::CodeGenerator() :
       OMR::CodeGeneratorConnector(),
    _gpuSymbolMap(self()->comp()->allocator()),
    _stackLimitOffsetInMetaData(self()->comp()->fej9()->thisThreadGetStackLimitOffset()),
-   _liveMonitors(NULL)
+   _uncommonedNodes(self()->comp()->trMemory(), stackAlloc),
+   _liveMonitors(NULL),
+   _nodesSpineCheckedList(getTypedAllocator<TR::Node*>(TR::comp()->allocator())),
+   _jniCallSites(getTypedAllocator<TR_Pair<TR_ResolvedMethod,TR::Instruction> *>(TR::comp()->allocator()))
    {
    }
 
@@ -587,8 +590,8 @@ J9::CodeGenerator::preLowerTrees()
 */
 
    // For dual operator lowering
-   _uncommmonedNodes.reset();
-   _uncommmonedNodes.init(64, true);
+   _uncommonedNodes.reset();
+   _uncommonedNodes.init(64, true);
    }
 
 
@@ -2911,6 +2914,27 @@ void J9::CodeGenerator::addProjectSpecializedPairRelocation(uint8_t *location, u
          generatingFileName, generatingLineNumber, node);
    }
 
+
+TR::Node *
+J9::CodeGenerator::createOrFindClonedNode(TR::Node *node, int32_t numChildren)
+   {
+   TR_HashId index;
+   if (!_uncommonedNodes.locate(node->getGlobalIndex(), index))
+      {
+      // has not been uncommoned already, clone and store for later
+      TR::Node *clone = TR::Node::copy(node, numChildren);
+      _uncommonedNodes.add(node->getGlobalIndex(), index, clone);
+      node = clone;
+      }
+   else
+      {
+      // found previously cloned node
+      node = (TR::Node *) _uncommonedNodes.getData(index);
+      }
+   return node;
+   }
+
+
 void
 J9::CodeGenerator::jitAddUnresolvedAddressMaterializationToPatchOnClassRedefinition(void *firstInstruction)
    {
@@ -2972,7 +2996,6 @@ J9::CodeGenerator::compressedReferenceRematerialization()
          node = tt->getNode();
          if (node->getOpCodeValue() == TR::BBStart && !node->getBlock()->isExtensionOfPreviousBlock())
             {
-            _compressedRefs.clear();
 
             ListIterator<TR::Node> nodesIt(&rematerializedNodes);
             for (TR::Node * rematNode = nodesIt.getFirst(); rematNode != NULL; rematNode = nodesIt.getNext())
@@ -2990,7 +3013,6 @@ J9::CodeGenerator::compressedReferenceRematerialization()
            {
            if (node->getFirstChild()->getVisitCount() == visitCount)
               alreadyVisitedFirstChild = true;
-           _compressedRefs.push_front(node->getFirstChild());
            }
 
          self()->rematerializeCompressedRefs(autoSymRef, tt, NULL, -1, node, visitCount, &rematerializedNodes);
@@ -4655,7 +4677,7 @@ J9::CodeGenerator::generateCatchBlockBBStartPrologue(
       {
       // Note we should not use `fenceInstruction` here because it is not the first instruction in this BB. The first
       // instruction is a label that incoming branches will target. We will use this label (first instruction in the
-      // block) in `createMethodMetaData` to populate a list of non-mergable GC maps so as to ensure the GC map at the
+      // block) in `createMethodMetaData` to populate a list of non-mergeable GC maps so as to ensure the GC map at the
       // catch block entry is always present if requested.
       node->getBlock()->getFirstInstruction()->setNeedsGCMap();
       }

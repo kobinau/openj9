@@ -581,8 +581,8 @@ TR::CompilationInfo::createCompilationInfo(J9JITConfig * jitConfig)
       {
       TR::RawAllocator rawAllocator(jitConfig->javaVM);
       void * alloc = rawAllocator.allocate(sizeof(TR::CompilationInfo));
-      /* FIXME: Replace this with the appropriate intializers in the constructor */
-      /* Note: there are embbeded objects in TR::CompilationInfo that rely on the fact
+      /* FIXME: Replace this with the appropriate initializers in the constructor */
+      /* Note: there are embedded objects in TR::CompilationInfo that rely on the fact
          that we do memset this object to 0 */
       memset(alloc, 0, sizeof(TR::CompilationInfo));
       _compilationRuntime = new (alloc) TR::CompilationInfo(jitConfig);
@@ -1016,7 +1016,7 @@ TR_YesNoMaybe TR::CompilationInfo::detectCompThreadStarvation()
    for (int32_t compId = 0; compId < _compThreadIndex; compId++)
       {
       // We must look at all active threads because we want to avoid the
-      // case where they compete with each other (4 comp threads on a single procesor)
+      // case where they compete with each other (4 comp threads on a single processor)
       //
       TR::CompilationInfoPerThread *compInfoPT = _arrayOfCompilationInfoPerThread[compId];
       TR_ASSERT(compInfoPT, "compInfoPT must exist because we don't destroy compilation threads");
@@ -1538,7 +1538,7 @@ TR::CompilationInfo::updateCompQueueAccountingOnDequeue(TR_MethodToBeCompiled *e
       TR_ASSERT(_numQueuedFirstTimeCompilations >= 0, "_numQueuedFirstTimeCompilations is negative : %d", _numQueuedFirstTimeCompilations);
       }
    // Note: queue weight is handled separately because a method that is currently being
-   // compiled is considered as bringing some weigth to the processing backlog
+   // compiled is considered as bringing some weight to the processing backlog
    }
 
 
@@ -2325,7 +2325,7 @@ TR::CompilationInfoPerThread* TR::CompilationInfo::getCompInfoForThread(J9VMThre
 //-------------------------- startCompilationThread --------------------------
 // Start ONE compilation thread and initialize the associated
 // TR::CompilationInfoPerThread structure
-// This function returns immediatelly after the thread is created
+// This function returns immediately after the thread is created
 // Parameters:
 //   priority - the desired priority of the thread (0..5); negative number
 //               means that the priority will be computed automatically
@@ -2632,7 +2632,7 @@ void TR::CompilationInfo::stopCompilationThreads()
    //fprintf(stderr, "stopCompilationThread\n");
    // if we compile on application thread, there is no compilation
    // request queue and there is no compilation thread
-   // The SMALL jit case is already treated separatelly
+   // The SMALL jit case is already treated separately
    if (!useSeparateCompilationThread())
       {
       acquireCompMonitor(vmThread);
@@ -3073,7 +3073,7 @@ IDATA J9THREAD_PROC compilationThreadProc(void *entryarg)
    // It is possible that the shutdown signal came before this thread has had the time
    // to become fully initialized. If that's the case, the state will appear as STOPPING
    // instead of UNINITIALIZED. This can happen when we destroy the cache; the java app
-   // starts and finishes immediatelly
+   // starts and finishes immediately
    if (compInfoPT->getCompilationThreadState() == COMPTHREAD_SIGNAL_TERMINATE)
       {
       compInfoPT->setCompilationThreadState(COMPTHREAD_STOPPING);
@@ -3729,7 +3729,7 @@ TR::CompilationInfoPerThread::processEntry(TR_MethodToBeCompiled &entry, J9::J9S
 
       compInfo->debugPrint("\trequeueing interrupted compilation request", details, compThread);
 
-      // After releaseing the monitors and vm access below, we will loop back to the head of the loop, and retry the
+      // After releasing the monitors and vm access below, we will loop back to the head of the loop, and retry the
       // compilation.  Do not put the request back into the pool, instead requeue.
       //
       requeue();
@@ -4535,7 +4535,7 @@ TR::CompilationInfo::getNextMethodToBeCompiled(TR::CompilationInfoPerThread *com
    if (_methodQueue)
       {
       // If the request is sync or AOT load or InstantReplay, take it now
-      if (compInfoPT->isDiagnosticThread() || // InstantReplay compilations must be processed immediatelly
+      if (compInfoPT->isDiagnosticThread() || // InstantReplay compilations must be processed immediately
          _methodQueue->_priority >= CP_SYNC_MIN ||       // sync comp
          _methodQueue->_methodIsInSharedCache == TR_yes) // very cheap relocation
          {
@@ -4695,7 +4695,7 @@ TR::CompilationInfo::getNextMethodToBeCompiled(TR::CompilationInfoPerThread *com
 
 //----------------------------- computeCompThreadSleepTime ----------------------
 // Compute how much the compilation thread should sleep for throttling purposes
-// Parameters: compilationTimeMs is the wall clock time spent by previuous
+// Parameters: compilationTimeMs is the wall clock time spent by previous
 // compilation
 // The return value is in ms.
 //-------------------------------------------------------------------------------
@@ -4961,7 +4961,7 @@ void *TR::CompilationInfo::compileMethod(J9VMThread * vmThread, TR::IlGeneratorM
 
    // If compiling on this thread acquire the application thread monitor.
    // This is the monitor that prevents compilation on multiple application
-   // threadsat the same time. It is held for the duration of the compilation.
+   // threads at the same time. It is held for the duration of the compilation.
    //
    if (!useSeparateCompilationThread())
       {
@@ -6070,7 +6070,7 @@ void TR::CompilationInfo::queueForcedAOTUpgrade(TR_MethodToBeCompiled *originalE
          {
          if (!TR::Options::isQuickstartDetected())
             hotness = warm;
-         else  if (TR::Options::getCmdLineOptions()->getOption(TR_UpgradeBootstrapAtWarm))// This is a JIT option because it perteins to JIT compilations
+         else  if (TR::Options::getCmdLineOptions()->getOption(TR_UpgradeBootstrapAtWarm))// This is a JIT option because it pertains to JIT compilations
             {
             // To reduce affect on short applications like tomcat
             // upgrades to warm should be performed only outside the grace period
@@ -6658,7 +6658,7 @@ TR::CompilationInfoPerThreadBase::postCompilationTasks(J9VMThread * vmThread,
             }
          }
 
-      // Check conditions for adding to JProfling queue.
+      // Check conditions for adding to JProfiling queue.
       // TODO: How should be AOT loads treated?
       if (_addToJProfilingQueue &&
          entry->_oldStartPC == 0 && startPC != 0)// Must be a first time compilation that succeeded
@@ -7207,7 +7207,7 @@ TR::CompilationInfoPerThreadBase::wrappedCompile(J9PortLibrary *portLib, void * 
                }
 
             // Check if user allows us to do samplingJProfiling.
-            // If so, enable it programatically on a method by method basis
+            // If so, enable it programmatically on a method by method basis
             //
             if (!options->getOption(TR_DisableSamplingJProfiling))
                {
@@ -11080,7 +11080,7 @@ TR::CompilationInfo::scheduleLPQAndBumpCount(TR::IlGeneratorMethodDetails &detai
    // If method is found, move it to main queue
    // We prevent concurrency issues by making sure the invocation count is 0 when adding to LPQ
    // We must make sure that if the method is not found in LPQ there is absolutely no way
-   // it can be present in main queue (invocation count being 0 should guatantee us that
+   // it can be present in main queue (invocation count being 0 should guarantee us that
    // because a method waiting in main queue should be marked QUEUED_FOR_COMPILATION)
    // We should put an assert that all ordinary async first time compilations in the main
    // queue are marked QUEUED_FOR_COMPILATION

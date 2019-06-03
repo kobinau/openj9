@@ -599,7 +599,7 @@ void TR_J9VMBase::addSharedCacheHint(J9Method * method, TR_SharedCacheHint hint)
 
       // There is only one scenario where concurrency *may* matter, so we don't get a lock
       // The scenario is where a compilation thread wants to register a hint about the method it's compiling at
-      // the same time that another thread is inling it *for the first time*. In that case, one of the hints
+      // the same time that another thread is inlining it *for the first time*. In that case, one of the hints
       // won't be registered. The affect, however is minimal, and likely to correct itself in the current run
       // (if the inlining hint is missed) or a subsequent run (if the other hint is missed).
       uint32_t scHints = getSharedCacheHint(vmThread, method, scConfig);
@@ -1908,8 +1908,6 @@ UDATA TR_J9VMBase::thisThreadGetGSIntermediateResultOffset()
  */
 UDATA TR_J9VMBase::thisThreadGetConcurrentScavengeActiveByteAddressOffset()
    {
-   TR_ASSERT_FATAL(J9_PRIVATE_FLAGS_CONCURRENT_SCAVENGER_ACTIVE == 0x20000,
-              "GSCS: The check weither concurrent scavenge is active is dependant on the flag being 0x20000");
    int32_t privateFlagsConcurrentScavengerActiveByteOffset = 5;
    return offsetof(J9VMThread, privateFlags) + privateFlagsConcurrentScavengerActiveByteOffset;
    }
@@ -2373,7 +2371,7 @@ TR_MarkHotField::mark(J9Class * clazz, bool isFixedClass)
 
    if ((*(UDATA *)((char *)clazz + offsetOfHotFields()) & 0x1))
       {
-      // temorary hack: tenure aligned classes can't have
+      // temporary hack: tenure aligned classes can't have
       // hot fields marked, we need another word for this
       if (_comp->getOption(TR_TraceMarkingOfHotFields))
          {
@@ -2655,7 +2653,7 @@ TR_J9VMBase::printTruncatedSignature(char *sigBuf, int32_t bufLen, TR_OpaqueMeth
       else
          {
          int32_t nameLen = std::min<int32_t>(bufLen-3, J9UTF8_LENGTH(name));
-         if (nameLen == bufLen-3) // not even the method name can be printed entireley
+         if (nameLen == bufLen-3) // not even the method name can be printed entirely
             sigLen = sprintf(sigBuf, "*.%.*s", nameLen, utf8Data(name));
          else
             sigLen = sprintf(sigBuf, "%.*s.%.*s", std::min<int32_t>(bufLen-2 - nameLen, J9UTF8_LENGTH(className)), utf8Data(className), nameLen, utf8Data(name));
@@ -3133,7 +3131,7 @@ int TR_J9VMBase::checkInlineableTarget (TR_CallTarget* target, TR_CallSite* call
             }
          else if ( comp->getCurrentMethod()->convertToMethod()->isArchetypeSpecimen() || comp->getCurrentMethod()->getRecognizedMethod() == TR::java_lang_invoke_MethodHandle_invokeExact )
             {
-            // We're in JSR292 Inlining rounds, and we are ourselves an archetype specimen, so we can inline other archetype specimina whenever we see fit
+            // We're in JSR292 Inlining rounds, and we are ourselves an archetype specimen, so we can inline other archetype specimens whenever we see fit
             }
          else if ( comp->getMethodHotness() >= hot )
             {
@@ -4487,12 +4485,12 @@ TR_J9VMBase::initializeLocalArrayHeader(TR::Compilation * comp, TR::Node * alloc
       arraySizeSymRef = comp->getSymRefTab()->findOrCreateDiscontiguousArraySizeSymbolRef();
       }
 #if defined(TR_HOST_S390) && defined(TR_TARGET_S390)
-   //TODO remove define s390 flags when x and power enable suport for inlining 0 size arrays
+   //TODO remove define s390 flags when x and power enable support for inlining 0 size arrays
    // clean up canGenerateArraylets() && TR::Compiler->om.useHybridArraylets() && TR::Compiler->om.isDiscontiguousArray(instanceSize) queries?
    else if (!comp->getOptions()->realTimeGC() && instanceSize == 0)
       {
       // Contiguous size field is zero (mandatory)
-      // For J9VM_GC_COMBINATION_SPEC only 0 size discontinous arrays are supported
+      // For J9VM_GC_COMBINATION_SPEC only 0 size discontiguous arrays are supported
       TR::Node* node = TR::Node::create(allocationNode, TR::iconst, 0, instanceSize);
       arraySizeSymRef = comp->getSymRefTab()->findOrCreateContiguousArraySizeSymbolRef();
       node = TR::Node::createWithSymRef(TR::istorei, 2, 2, allocationNode, node, arraySizeSymRef);
@@ -6336,7 +6334,7 @@ TR::SymbolReference* TR_J9VMBase::findOrCreateMethodSymRef(TR::Compilation* comp
    return result;
 }
 
-//Given an array of full method signatures (i.e., incluing full class name), this method
+//Given an array of full method signatures (i.e., including full class name), this method
 //gives symrefs for those methods. The number of input methods are given in methodCount.
 //The function returns the number of methods found
 //this function handles static and virtual functions only
@@ -8261,7 +8259,7 @@ TR_J9VMBase::setInlineThresholds (TR::Compilation *comp, int32_t &callerWeightLi
      }
 
 
-   int32_t _adjustMaxCutOff = 200; //decrease the thershold to make it similar to r11 while we are big app
+   int32_t _adjustMaxCutOff = 200; //decrease the threshold to make it similar to r11 while we are big app
 
    static const char * adjustMaxCutOff = feGetEnv("TR_WarmInlineAdjustMaxCutOff");
 
