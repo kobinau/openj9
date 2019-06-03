@@ -375,9 +375,9 @@ void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupC
       {//fixing my really shameful error
       bool is_runtime_assumption=kind==RuntimeAssumptionOnClassRedefinitionPIC||kind==RuntimeAssumptionOnClassRedefinitionUPIC||kind==RuntimeAssumptionOnClassRedefinitionNOP;
 
-      if(runRedef==true&&!is_runtime_assumption)
+      if(runRedef==true&&is_runtime_assumption)
 	  continue;
-      else if(runRedef==false&&is_runtime_assumption)
+      else if(runRedef==false&&!is_runtime_assumption)//switcharound to see if errors
 	  continue;
         if (_detachPending[kind] == true)  // Is there anything to remove from this table?
          {
