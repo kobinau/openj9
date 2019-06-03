@@ -368,18 +368,17 @@ void TR_RuntimeAssumptionTable::markForDetachFromRAT(OMR::RuntimeAssumption *ass
 void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount,bool runRedef)
    {
    if (_marked == 0)
-      return;
-
-   bool is_runtime_assumption=kind==RuntimeAssumptionOnClassRedefinitionPIC||kind==RuntimeAssumptionOnClassRedefinitionUPIC||kind==RuntimeAssumptionOnClassRedefinitionNOP;
-  
+      return;  
    
    assumptionTableMutex->enter();
    for (int kind=0; _marked > 0 && cleanupCount != 0 && kind < LastAssumptionKind; kind++) // for each table
-      {
-     // if(runRedef==true&&!is_runtime_assumption)
-//	  continue;
-  //    else if(runRedef==false&&is_runtime_assumption)
-//	  continue;
+      {//fixing my really shameful error
+      bool is_runtime_assumption=kind==RuntimeAssumptionOnClassRedefinitionPIC||kind==RuntimeAssumptionOnClassRedefinitionUPIC||kind==RuntimeAssumptionOnClassRedefinitionNOP;
+
+      if(runRedef==true&&!is_runtime_assumption)
+	  continue;
+      else if(runRedef==false&&is_runtime_assumption)
+	  continue;
         if (_detachPending[kind] == true)  // Is there anything to remove from this table?
          {
          TR_RatHT *hashTable = _tables + kind;

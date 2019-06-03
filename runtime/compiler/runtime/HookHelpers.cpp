@@ -425,8 +425,8 @@ void jitReclaimMarkedAssumptions(bool isEager)
    else
       {
       runRedef=true;
-      //reclaimMarkedAssumptionsFromRAT(100,runRedef);
-      reclaimMarkedAssumptionsFromRAT(-1,runRedef);
+      reclaimMarkedAssumptionsFromRAT(100,runRedef);
+      //reclaimMarkedAssumptionsFromRAT(-1,runRedef);
       }
    }
 
