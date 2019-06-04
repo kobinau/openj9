@@ -97,7 +97,7 @@ class TR_RuntimeAssumptionTable
    void purgeRATTable(TR_FrontEnd *fe);
    void purgeRATArray(TR_FrontEnd *fe, OMR::RuntimeAssumption **array, uint32_t size);
    void purgeAssumptionListHead(OMR::RuntimeAssumption *&assumptionList, TR_FrontEnd *fe);
-
+   void reclaimAssumptions(OMR::RuntimeAssumption **sentinel, void * metaData, bool reclaimPrePrologueAssumptions = false);
    void reclaimAssumptions(void *reclaimedMetaData, bool reclaimPrePrologueAssumptions = false);
    void notifyClassUnloadEvent(TR_FrontEnd *vm, bool isSMP,
                                TR_OpaqueClassBlock *classOwningAssumption,
