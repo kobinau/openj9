@@ -304,6 +304,15 @@ void TR_RuntimeAssumptionTable::purgeRATArray(TR_FrontEnd *fe, OMR::RuntimeAssum
          purgeAssumptionListHead(array[index], fe);
       }
    }
+//add function here
+inline OMR::RuntimeAssumption **TR_RuntimeAssumptionTable::getBucketPtr(TR_RuntimeAssumptionKind kind, uintptrj_t hashIndex)
+      {
+      TR_RatHT *hashTable = findAssumptionHashTable(kind);
+      OMR::RuntimeAssumption **head = hashTable->_htSpineArray + (hashIndex % hashTable->_spineArraySize);
+      while (head && *head && (*head)->isMarkedForDetach())
+         head = &((*head)->_next);
+      return head;
+      }
 
 void TR_RuntimeAssumptionTable::purgeRATTable(TR_FrontEnd *fe)
    {
@@ -365,7 +374,7 @@ void TR_RuntimeAssumptionTable::markForDetachFromRAT(OMR::RuntimeAssumption *ass
  * will be traversed, and only the hashtable linked-lists that have a non-zero 
  * marked for detach count will be traversed.
  */
-void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount,bool runRedef)
+void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount)
    {
    if (_marked == 0)
       return;  
@@ -373,12 +382,12 @@ void TR_RuntimeAssumptionTable::reclaimMarkedAssumptionsFromRAT(int32_t cleanupC
    assumptionTableMutex->enter();
    for (int kind=0; _marked > 0 && cleanupCount != 0 && kind < LastAssumptionKind; kind++) // for each table
       {//fixing my really shameful error
-      bool is_runtime_assumption=kind==RuntimeAssumptionOnClassRedefinitionPIC||kind==RuntimeAssumptionOnClassRedefinitionUPIC||kind==RuntimeAssumptionOnClassRedefinitionNOP;
+     // bool is_runtime_assumption=kind==RuntimeAssumptionOnClassRedefinitionPIC||kind==RuntimeAssumptionOnClassRedefinitionUPIC||kind==RuntimeAssumptionOnClassRedefinitionNOP;
 
-      if(runRedef==true&&is_runtime_assumption)
-	  continue;
-      else if(runRedef==false&&!is_runtime_assumption)//switcharound to see if errors
-	  continue;
+     // if(runRedef==true&&is_runtime_assumption)
+//	  continue;
+  //    else if(runRedef==false&&!is_runtime_assumption)//switcharound to see if errors
+//	  continue;
         if (_detachPending[kind] == true)  // Is there anything to remove from this table?
          {
          TR_RatHT *hashTable = _tables + kind;
@@ -555,7 +564,7 @@ int32_t TR_RuntimeAssumptionTable::countRatAssumptions()
 void TR_RuntimeAssumptionTable::reclaimAssumptions(void *md, bool reclaimPrePrologueAssumptions)
    {
    J9JITExceptionTable *metaData = (J9JITExceptionTable*) md;
-   reclaimAssumptions((OMR::RuntimeAssumption**)(&metaData->runtimeAssumptionList), metaData, reclaimPrePrologueAssumptions);
+   reclaimAssumptions((OMR::RuntimeAssumption**) (&metaData->runtimeAssumptionList), metaData, reclaimPrePrologueAssumptions);
 
    // HCR: Note that we never reclaim assumptions on the PersistentMethodInfo.
    // First, it's not safe to do so here, since the fact that a method body

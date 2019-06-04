@@ -87,11 +87,8 @@ class TR_RuntimeAssumptionTable
       {return (key >> 2) * 2654435761u; } // 2654435761u is the golden ratio of 2^32
    TR_RatHT* findAssumptionHashTable(TR_RuntimeAssumptionKind kind) { return (kind >= 0 && kind < LastAssumptionKind) ? _tables + kind : NULL; }
 
-   OMR::RuntimeAssumption **getBucketPtr(TR_RuntimeAssumptionKind kind, uintptrj_t hashIndex)
-      {
-      TR_RatHT *hashTable = findAssumptionHashTable(kind);
-      return hashTable->_htSpineArray + (hashIndex % hashTable->_spineArraySize);
-      }
+   OMR::RuntimeAssumption **getBucketPtr(TR_RuntimeAssumptionKind kind, uintptrj_t hashIndex);//moved definition to other class def functions
+
    OMR::RuntimeAssumption *getBucket(TR_RuntimeAssumptionKind kind, uintptrj_t key)
       {
       return *getBucketPtr(kind, hashCode(key));
@@ -101,7 +98,6 @@ class TR_RuntimeAssumptionTable
    void purgeRATArray(TR_FrontEnd *fe, OMR::RuntimeAssumption **array, uint32_t size);
    void purgeAssumptionListHead(OMR::RuntimeAssumption *&assumptionList, TR_FrontEnd *fe);
 
-   void reclaimAssumptions(OMR::RuntimeAssumption **sentinel, void * metaData, bool reclaimPrePrologueAssumptions = false);
    void reclaimAssumptions(void *reclaimedMetaData, bool reclaimPrePrologueAssumptions = false);
    void notifyClassUnloadEvent(TR_FrontEnd *vm, bool isSMP,
                                TR_OpaqueClassBlock *classOwningAssumption,
@@ -124,7 +120,7 @@ class TR_RuntimeAssumptionTable
     * removed from the table - this is used to rate limit clean-up activity
     * and amortize the cost over time.
     */
-   void reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount = -1,bool runRedef);//kobiMod
+   void reclaimMarkedAssumptionsFromRAT(int32_t cleanupCount = -1);
 
    int32_t countRatAssumptions();
 

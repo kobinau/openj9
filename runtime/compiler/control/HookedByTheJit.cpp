@@ -5323,8 +5323,7 @@ static void jitStateLogic(J9JITConfig * jitConfig, TR::CompilationInfo * compInf
          {
          static char *disableIdleRATCleanup = feGetEnv("TR_disableIdleRATCleanup");
          if (disableIdleRATCleanup == NULL)
-            persistentInfo->getRuntimeAssumptionTable()->reclaimMarkedAssumptionsFromRAT(-1,true);//kobiMod: true to run everything
-	    persistentInfo->getRuntimeAssumptionTable()->reclaimMarkedAssumptionsFromRAT(-1,false);//kobiMod2: so all kinds get cleaned at this point.   
+            persistentInfo->getRuntimeAssumptionTable()->reclaimMarkedAssumptionsFromRAT(-1);
       }
 
       // Logic related to IdleCPU exploitation
