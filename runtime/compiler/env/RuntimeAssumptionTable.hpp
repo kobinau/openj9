@@ -87,7 +87,8 @@ class TR_RuntimeAssumptionTable
       {return (key >> 2) * 2654435761u; } // 2654435761u is the golden ratio of 2^32
    TR_RatHT* findAssumptionHashTable(TR_RuntimeAssumptionKind kind) { return (kind >= 0 && kind < LastAssumptionKind) ? _tables + kind : NULL; }
 
-   OMR::RuntimeAssumption **getBucketPtr(TR_RuntimeAssumptionKind kind, uintptrj_t hashIndex);//moved definition to other class def functions
+
+   OMR::RuntimeAssumption **getBucketPtr(TR_RuntimeAssumptionKind kind, uintptrj_t hashIndex);
 
    OMR::RuntimeAssumption *getBucket(TR_RuntimeAssumptionKind kind, uintptrj_t key)
       {

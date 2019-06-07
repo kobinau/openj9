@@ -850,9 +850,6 @@ TR::OptionTable OMR::Options::_feOptions[] = {
         TR::Options::setStaticNumeric, (intptrj_t)&TR::Options::_iprofilerSamplesBeforeTurningOff, 0, "P%d", NOT_IN_SUBSET},
    {"itFileNamePrefix=",  "L<filename>\tprefix for itrace filename",
         TR::Options::setStringForPrivateBase, offsetof(TR_JitPrivateConfig,itraceFileNamePrefix), 0, "P%s"},
-#if defined(AIXPPC)
-   {"j2prof",             0, SET_JITCONFIG_RUNTIME_FLAG(J9JIT_J2PROF) },
-#endif
    {"jProfilingEnablementSampleThreshold=", "M<nnn>\tNumber of global samples to allow generation of JProfiling bodies",
         TR::Options::setStaticNumeric, (intptrj_t)&TR::Options::_jProfilingEnablementSampleThreshold, 0, "F%d", NOT_IN_SUBSET },
    {"kcaoffsets",         "I\tGenerate a header file with offset data for use with KCA", TR::Options::kcaOffsets, 0, 0, "F" },
@@ -2329,11 +2326,17 @@ bool J9::Options::feLatePostProcess(void * base, TR::OptionSet * optionSet)
          {
          if (!self()->getOption(TR_DisablePersistIProfile))
             {
-            TR::CompilationInfo * compInfo = getCompilationInfo(jitConfig);
-            static char * dnipdsp = feGetEnv("TR_DisableNoIProfilerDuringStartupPhase");
-            if (compInfo->isWarmSCC() == TR_yes && !dnipdsp) // turn off Iprofiler only for the warm runs
+            // Turn off Iprofiler for the warm runs, but not if we cache only bootstrap classes
+            // This is because we may be missing IProfiler information for non-bootstrap classes
+            // that could not be stored in SCC
+            if (J9_ARE_ALL_BITS_SET(javaVM->sharedClassConfig->runtimeFlags, J9SHR_RUNTIMEFLAG_ENABLE_CACHE_NON_BOOT_CLASSES))
                {
-               self()->setOption(TR_NoIProfilerDuringStartupPhase);
+               TR::CompilationInfo * compInfo = getCompilationInfo(jitConfig);
+               static char * dnipdsp = feGetEnv("TR_DisableNoIProfilerDuringStartupPhase");
+               if (compInfo->isWarmSCC() == TR_yes && !dnipdsp)
+                  {
+                  self()->setOption(TR_NoIProfilerDuringStartupPhase);
+                  }
                }
             }
          }

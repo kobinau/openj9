@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 IBM Corp. and others
+ * Copyright (c) 2019, 2019 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -19,54 +19,35 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
  *******************************************************************************/
+package com.ibm.jvmti.tests.eventException;
 
-#ifndef J9CFG_H
-#define J9CFG_H
+import java.lang.reflect.Method;
 
-/*
- * @ddr_namespace: map_to_type=J9BuildFlags
- * @ddr_options: valuesandbuildflags
- */
+public class ee001 
+{
+    public native static void invoke(Method m);
+    public native static boolean check();
+    
+    public String helpException()
+    {
+        return "Test only single exception event gets thrown with JNI frame before handler";
+    }
+    
+    public static void generateException() throws Exception
+    {
+        throw new Exception();
+    }
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+    public boolean testException() throws Exception
+    {
+        boolean exceptionCaught = false;
+        Method m = ee001.class.getMethod("generateException");
+        try {
+            invoke(m);
+        } catch (Exception e) {
+            exceptionCaught = true;
+        }
 
-#include "omrcfg.h"
-
-#define J9_COPYRIGHT_STRING "(c) Copyright 1991, ${uma.year} IBM Corp. and others."
-
-#define EsVersionMajor ${uma.buildinfo.version.major}
-#define EsVersionMinor ${uma.buildinfo.version.minor}0
-
-#define EsExtraVersionString ""
-
-#define JAVA_SPEC_VERSION ${uma.spec.properties.JAVA_SPEC_VERSION.value}
-
-/*  Note: The following defines record flags used to build VM.  */
-/*  Changing them here does not remove the feature and may cause linking problems. */
-
-<#list uma.spec.flags as flag>
-<#if flag.enabled && flag.cname_defined>
-#define ${flag.cname}
-</#if>
-</#list>
-
-/* flags NOT used by this VM.  */
-<#list uma.spec.flags as flag>
-<#if !flag.enabled && flag.cname_defined>
-#undef ${flag.cname}
-</#if>
-</#list>
-
-#undef J9VM_OPT_VALHALLA_VALUE_TYPES
-
-#if JAVA_SPEC_VERSION >= 11
-#define J9VM_OPT_VALHALLA_NESTMATES
-#endif
-
-#ifdef __cplusplus
+        return exceptionCaught && check();
+    }
 }
-#endif
-
-#endif /* J9CFG_H */
