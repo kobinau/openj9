@@ -1,4 +1,3 @@
-/*[INCLUDE-IF Sidecar18-SE]*/
 /*******************************************************************************
  * Copyright (c) 2019, 2019 IBM Corp. and others
  *
@@ -20,29 +19,53 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
  *******************************************************************************/
+package j9vm.test.corehelper;
 
-package openj9.tools.attach.diagnostics.base;
+public class TestJITExtHelperThread {
+	boolean isWaiting = false;
+	Thread jittedThread = null;
 
-/**
- * Container for information about a JVM's threads
- *
- */
-public interface DiagnosticsInfo {
-	String OPENJ9_DIAGNOSTICS_PREFIX = "openj9_diagnostics."; //$NON-NLS-1$
-	String JAVA_INFO = OPENJ9_DIAGNOSTICS_PREFIX + "java_info"; //$NON-NLS-1$
-	/**
-	 * Use for commands which return a single string
-	 */
-	String DIAGNOSTICS_STRING_RESULT = OPENJ9_DIAGNOSTICS_PREFIX + "string_result"; //$NON-NLS-1$
+	public void configureJittedHelperThread() {
+		jittedThread = new Thread() {
+			public void run() {
+				waitForDump();
+			}
+		};
 
-	@Override
-	String toString();
+		jittedThread.start();
 
-	/**
-	 * Print the information about the remote Java VM.
-	 * 
-	 * @return contents of system property "java.vm.info"
-	 */
-	String getJavaInfo();
+		/* wait to start core dump until thread is in a waiting state */
+		synchronized(this) {
+			while(!isWaiting) {
+				try {
+					wait(0,0);
+				} catch (InterruptedException e) {}
+			}
+		}
+	}
 
+	void waitForDump() {
+		synchronized(this) {
+			/* signal to main thread that it is safe to start the core dump */
+			isWaiting = true;
+			notifyAll();
+
+			while (isWaiting) {
+				try {
+					wait(0, 0);
+				} catch (InterruptedException e) {}
+			}
+		}
+	}
+
+	public void endJittedHelperThread() {
+		synchronized(this) {
+			isWaiting = false;
+			notifyAll();
+		}
+
+		try {
+			jittedThread.join();
+		} catch(InterruptedException e) {}
+	}
 }

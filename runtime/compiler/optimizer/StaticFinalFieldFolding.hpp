@@ -1,4 +1,3 @@
-/*[INCLUDE-IF Sidecar18-SE]*/
 /*******************************************************************************
  * Copyright (c) 2019, 2019 IBM Corp. and others
  *
@@ -21,28 +20,32 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
  *******************************************************************************/
 
-package openj9.tools.attach.diagnostics.base;
+#ifndef STATICFINALFIELDFOLDING_INCL
+#define STATICFINALFIELDFOLDING_INCL
 
-/**
- * Container for information about a JVM's threads
- *
- */
-public interface DiagnosticsInfo {
-	String OPENJ9_DIAGNOSTICS_PREFIX = "openj9_diagnostics."; //$NON-NLS-1$
-	String JAVA_INFO = OPENJ9_DIAGNOSTICS_PREFIX + "java_info"; //$NON-NLS-1$
-	/**
-	 * Use for commands which return a single string
-	 */
-	String DIAGNOSTICS_STRING_RESULT = OPENJ9_DIAGNOSTICS_PREFIX + "string_result"; //$NON-NLS-1$
+#include <stdint.h>
+#include "il/Node.hpp"
+#include "optimizer/Optimization.hpp"
+#include "optimizer/OptimizationManager.hpp"
 
-	@Override
-	String toString();
+namespace TR { class NodeChecklist; }
 
-	/**
-	 * Print the information about the remote Java VM.
-	 * 
-	 * @return contents of system property "java.vm.info"
-	 */
-	String getJavaInfo();
+class TR_StaticFinalFieldFolding : public TR::Optimization
+   {
+   TR::NodeChecklist *_checklist;
+   void visitNode(TR::TreeTop * currentTree, TR::Node *node);
 
-}
+   public:
+
+   TR_StaticFinalFieldFolding(TR::OptimizationManager *manager)
+      : TR::Optimization(manager)
+      {}
+   static TR::Optimization *create(TR::OptimizationManager *manager)
+      {
+      return new (manager->allocator()) TR_StaticFinalFieldFolding(manager);
+      }
+   virtual int32_t perform();
+   virtual const char * optDetailString() const throw();
+
+   };
+#endif
