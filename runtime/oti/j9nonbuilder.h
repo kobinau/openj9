@@ -1711,11 +1711,36 @@ typedef struct J9ModuleExtraInfo {
 	UDATA patchPathCount;
 } J9ModuleExtraInfo;
 
-typedef struct J9FlattenedClassCache {
+/*             Structure of Flattened Class Cache              */
+/*                                                             *
+ *    Default Value   |   Number of Entries   |                *
+ *____________________|_______________________|________________* 
+ *                    |                       |                *
+ *      clazz 0       |   Name & Signature 0  |     offset 0   *
+ *____________________|_______________________|________________* 
+ *                    |                       |                *
+ *      clazz 1       |   Name & Signature 1  |     offset 1   *
+ *____________________|_______________________|________________* 
+ *         .          |           .           |        .       *
+ *         .          |           .           |        .       *
+ *         .          |           .           |        .       *
+ *____________________|_______________________|________________* 
+ *                    |                       |                *
+ *      clazz N       |   Name & Signature N  |     offset N   * 
+ ***************************************************************/
+typedef struct J9FlattenedClassCacheEntry {
 	struct J9Class* clazz;
 	struct J9ROMNameAndSignature* nameAndSignature;
 	UDATA offset;
+} J9FlattenedClassCacheEntry;
+
+typedef struct J9FlattenedClassCache {
+	j9object_t defaultValue;
+	UDATA numberOfEntries;
 } J9FlattenedClassCache;
+
+#define J9_VM_FCC_ENTRY_FROM_FCC(flattenedClassCache, index) (((J9FlattenedClassCacheEntry *)((flattenedClassCache) + 1)) + (index))
+#define J9_VM_FCC_ENTRY_FROM_CLASS(clazz, index) J9_VM_FCC_ENTRY_FROM_FCC((clazz)->flattenedClassCache, index)
 
 struct J9TranslationBufferSet;
 typedef struct J9VerboseStruct {
@@ -1989,7 +2014,8 @@ typedef struct J9BCTranslationData {
 #define BCT_Java11MajorVersionShifted 0x37000000
 #define BCT_Java12MajorVersionShifted 0x38000000
 #define BCT_Java13MajorVersionShifted 0x39000000
-#define BCT_JavaMaxMajorVersionShifted BCT_Java13MajorVersionShifted
+#define BCT_Java14MajorVersionShifted 0x3A000000
+#define BCT_JavaMaxMajorVersionShifted BCT_Java14MajorVersionShifted
 
 typedef struct J9RAMClassFreeListBlock {
 	UDATA size;
@@ -3671,6 +3697,8 @@ typedef struct J9JITConfig {
 	void ( *jitMethodBreakpointed)(struct J9VMThread *currentThread, struct J9Method *method) ;
 	void ( *jitMethodUnbreakpointed)(struct J9VMThread *currentThread, struct J9Method *method) ;
 	void ( *jitIllegalFinalFieldModification)(struct J9VMThread *currentThread, struct J9Class *fieldClass);
+	U_8* (*codeCacheWarmAlloc)(void *codeCache);
+	U_8* (*codeCacheColdAlloc)(void *codeCache);
 } J9JITConfig;
 
 #define J9JIT_GROW_CACHES  0x100000
@@ -5373,6 +5401,7 @@ typedef struct J9JavaVM {
 	jmethodID addOpens;
 	jmethodID addUses;
 	jmethodID addProvides;
+	UDATA addModulesCount;
 	UDATA safePointState;
 	UDATA safePointResponseCount;
 	struct J9VMRuntimeStateListener vmRuntimeStateListener;
