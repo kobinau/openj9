@@ -223,7 +223,7 @@ allocateVMThread(J9JavaVM * vm, omrthread_t osThread, UDATA privateFlags, void *
 	newThread->readBarrierRangeCheckBaseCompressed = U_32_MAX;
 	newThread->readBarrierRangeCheckTopCompressed = 0;
 #endif /* OMR_GC_COMPRESSED_POINTERS */
-	newThread->globalPatchState = 0;
+//	newThread->globalPatchState = 0;
 #endif /* OMR_GC_CONCURRENT_SCAVENGER */
 
 	/* Attach the thread to OMR */

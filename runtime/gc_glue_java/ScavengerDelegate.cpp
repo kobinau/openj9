@@ -673,7 +673,7 @@ MM_ScavengerDelegate::switchConcurrentForThread(MM_EnvironmentBase *env)
 		 */
 		vmThread->readBarrierRangeCheckBase = (UDATA)base;
 		vmThread->readBarrierRangeCheckTop = (UDATA)top - 1;
-		vmThread->globalPatchState |= MASK_CS_PATCH;
+		//vmThread->globalPatchState |= MASK_CS_PATCH;
 #if defined(OMR_GC_COMPRESSED_POINTERS)
 		if (compressObjectReferences()) {
 			vmThread->readBarrierRangeCheckBaseCompressed = _extensions->accessBarrier->convertTokenFromPointer((mm_j9object_t)vmThread->readBarrierRangeCheckBase);
@@ -719,8 +719,9 @@ MM_ScavengerDelegate::switchConcurrentForThread(MM_EnvironmentBase *env)
 		/* No need for a runtime check here - it would just waste cycles */
 		vmThread->readBarrierRangeCheckBaseCompressed = U_32_MAX;
 		vmThread->readBarrierRangeCheckTopCompressed = 0;
-		vmThread->globalPatchState &= ~MASK_CS_PATCH;
 #endif
+		//vmThread->globalPatchState &= ~MASK_CS_PATCH;
+
     }
 }
 #endif /* OMR_GC_CONCURRENT_SCAVENGER */
