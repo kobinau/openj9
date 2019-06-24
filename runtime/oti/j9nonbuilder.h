@@ -4950,8 +4950,10 @@ typedef struct J9VMThread {
 #endif /* OMR_GC_COMPRESSED_POINTERS */
 #endif /* OMR_GC_CONCURRENT_SCAVENGER */
 	UDATA safePointCount;
+uint32_t globalPatchState;
 } J9VMThread;
 
+#define MASK_CS_PATCH 0x01
 #define J9VMTHREAD_ALIGNMENT  0x100
 #define J9VMTHREAD_RESERVED_C_STACK_FRACTION  8
 #define J9VMTHREAD_STATE_RUNNING  1
