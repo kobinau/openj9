@@ -94,7 +94,7 @@ allocateVMThread(J9JavaVM * vm, omrthread_t osThread, UDATA privateFlags, void *
 	J9VMThread *newThread = NULL;
 	BOOLEAN threadIsRecycled = FALSE;
 	J9MemoryManagerFunctions* gcFuncs = vm->memoryManagerFunctions;
-
+	
 #ifdef J9VM_INTERP_GROWABLE_STACKS
 #define VMTHR_INITIAL_STACK_SIZE ((vm->initialStackSize > (UDATA) vm->stackSize) ? vm->stackSize : vm->initialStackSize)
 #else
@@ -223,6 +223,7 @@ allocateVMThread(J9JavaVM * vm, omrthread_t osThread, UDATA privateFlags, void *
 	newThread->readBarrierRangeCheckBaseCompressed = U_32_MAX;
 	newThread->readBarrierRangeCheckTopCompressed = 0;
 #endif /* OMR_GC_COMPRESSED_POINTERS */
+	newThread->globalPatchState = 0;
 #endif /* OMR_GC_CONCURRENT_SCAVENGER */
 
 	/* Attach the thread to OMR */

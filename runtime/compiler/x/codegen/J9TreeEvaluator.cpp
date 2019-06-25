@@ -1018,10 +1018,16 @@ TR::Register* J9::X86::TreeEvaluator::performHeapLoadWithReadBarrier(TR::Node* n
          deps->addPostCondition(address, TR::RealRegister::NoReg, cg);
 
          generateLabelInstruction(LABEL, node, begLabel, cg);
-         generateRegMemInstruction(CMPRegMem(use64BitClasses), node, object, generateX86MemoryReference(cg->getVMThreadRegister(), cg->comp()->fej9()->thisThreadGetEvacuateBaseAddressOffset(), cg), cg);
-         generateLabelInstruction(JAE4, node, rdbarLabel, cg);
+         //generateLabelInstruction(JMP4, node, rdbarLabel, cg);
+	 generateRegMemInstruction(CMPRegMem(use64BitClasses), node, object, generateX86MemoryReference(cg->getVMThreadRegister(), cg->comp()->fej9()->thisThreadGetEvacuateBaseAddressOffset(), cg), cg);
+         generateLabelInstruction(JAE4, node, endLabel, cg);
          {
          TR_OutlinedInstructionsGenerator og(rdbarLabel, node, cg);
+
+	
+        // generateRegMemInstruction(CMPRegMem(use64BitClasses), node, object, generateX86MemoryReference(cg->getVMThreadRegister(), cg->comp()->fej9()->thisThreadGetEvacuateBaseAddressOffset(), cg), cg);
+        // generateLabelInstruction(JB4, node, endLabel, cg);
+
          generateRegMemInstruction(CMPRegMem(use64BitClasses), node, object, generateX86MemoryReference(cg->getVMThreadRegister(), cg->comp()->fej9()->thisThreadGetEvacuateTopAddressOffset(), cg), cg);
          generateLabelInstruction(JA4, node, endLabel, cg);
          generateMemRegInstruction(SMemReg(), node, generateX86MemoryReference(cg->getVMThreadRegister(), offsetof(J9VMThread, floatTemp1), cg), address, cg);
