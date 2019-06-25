@@ -2532,8 +2532,11 @@ static void consumeVMArgs(J9JavaVM* vm, J9VMInitArgs* j9vm_args) {
 	BOOLEAN assertOptionFound = FALSE;
 
 	findArgInVMArgs( PORTLIB, j9vm_args, EXACT_MATCH, VMOPT_XINT, NULL, TRUE);
-	/* If -Xverify:none, other -Xverify args previous to that should be ignored */
+	/* If -Xverify:none, other -Xverify args previous to that should be ignored. As of Java 13 -Xverify:none and -noverify are deprecated. */
 	if (findArgInVMArgs( PORTLIB, j9vm_args, STARTSWITH_MATCH, VMOPT_XVERIFY_COLON, OPT_NONE, TRUE) >= 0) {
+		if (J2SE_VERSION(vm) >= J2SE_V13) {
+			j9nls_printf(PORTLIB, J9NLS_WARNING, J9NLS_VM_XVERIFYNONE_DEPRECATED);
+		}
 		findArgInVMArgs( PORTLIB, j9vm_args, OPTIONAL_LIST_MATCH, VMOPT_XVERIFY, NULL, TRUE);
 	}
 #if defined(J9VM_INTERP_VERBOSE)
@@ -2713,6 +2716,11 @@ modifyDllLoadTable(J9JavaVM * vm, J9Pool* loadTable, J9VMInitArgs* j9vm_args)
 			}
 		}
 	}
+
+#if defined(J9AARCH64)
+	// temporary change until the JIT becomes available
+	xint = TRUE;
+#endif
 
 	if (xint) {
 		JVMINIT_VERBOSE_INIT_VM_TRACE(vm, "-Xint set\n");
