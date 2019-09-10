@@ -1024,7 +1024,6 @@ public:
    virtual bool               classHasBeenReplaced(TR_OpaqueClassBlock *);
    virtual TR::Node *          inlineNativeCall( TR::Compilation *,  TR::TreeTop *, TR::Node *);
    virtual TR_OpaqueClassBlock *getClassOfMethod(TR_OpaqueMethodBlock *method);
-   virtual int32_t            getObjectAlignmentInBytes();
 
    virtual void               initializeProcessorType();
    virtual void               initializeHasResumableTrapHandler();
