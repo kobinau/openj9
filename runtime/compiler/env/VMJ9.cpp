@@ -124,6 +124,7 @@
 #include "env/J9JitMemory.hpp"
 #include "infra/Bit.hpp"               //for trailingZeroes
 #include "VMHelpers.hpp"
+#include "VMJ9.h"
 
 #ifdef LINUX
 #include <signal.h>
@@ -2315,10 +2316,10 @@ TR_J9VMBase::markClassForTenuredAlignment(TR::Compilation *comp, TR_OpaqueClassB
       J9Class *clazz = TR::Compiler->cls.convertClassOffsetToClassPtr(opclazz);
       UDATA hotFieldsWordValue = 0x1; // mark for alignment
 
-      TR_ASSERT((alignFromStart % getObjectAlignmentInBytes())==0, "alignment undershot should be multiple of %d bytes", getObjectAlignmentInBytes());
+      TR_ASSERT((alignFromStart % TR::Compiler->om.objectAlignmentInBytes())==0, "alignment undershot should be multiple of %d bytes", TR::Compiler->om.objectAlignmentInBytes());
       TR_ASSERT((alignFromStart < 128), "alignment undershot should be less than 128 (124 max)");
 
-      hotFieldsWordValue |= (((alignFromStart & 0x7f)/getObjectAlignmentInBytes()) << 1);
+      hotFieldsWordValue |= (((alignFromStart & 0x7f)/TR::Compiler->om.objectAlignmentInBytes()) << 1);
 
       //printf("Class %p, hotFieldsWordValue %p\n", opclazz,  hotFieldsWordValue);
 
@@ -5964,17 +5965,6 @@ TR_J9VMBase::getLocalObjectAlignmentInBytes()
    return 1 << TR::Compiler->om.compressedReferenceShift();
    }
 
-I_32
-TR_J9VM::getObjectAlignmentInBytes()
-   {
-   J9JavaVM *jvm = _jitConfig->javaVM;
-   if (!jvm)
-      return 0;
-   J9MemoryManagerFunctions * mmf = jvm->memoryManagerFunctions;
-   uintptr_t result = 0;
-   result = mmf->j9gc_modron_getConfigurationValueForKey(jvm, j9gc_modron_configuration_objectAlignment, &result) ? result : 0;
-   return (I_32)result;
-   }
 
 
 TR_ResolvedMethod *
